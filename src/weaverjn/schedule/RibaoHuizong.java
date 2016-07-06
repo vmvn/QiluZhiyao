@@ -10,20 +10,20 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by dzyq on 2016/5/14.
+ * Created by dzyq on 2016/5/14 15:24.
  */
 public class RibaoHuizong extends BaseCronJob {
     public void execute() {
         Date today = new Date();
         int dayOfWeek = getDayOfWeek(today);
-        if (dayOfWeek != 6) {
-            System.out.println("---->RibaoHuizong:Not Friday");
+        if (dayOfWeek != 7) {
+            System.out.println("---->RibaoHuizong:Not Saturday");
         } else {
             System.out.println("---->RibaoHuizong:Start");
             RecordSet rs = new RecordSet();
             SimpleDateFormat SDFDATE = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, -4);
+            calendar.add(Calendar.DATE, -5);
             String monday = SDFDATE.format(calendar.getTime());
             String friday = SDFDATE.format(today);
             rs.executeSql("select distinct cjr from uf_jhrz where rq>='" + monday + "' and rq<='" + friday + "'");
@@ -100,10 +100,5 @@ public class RibaoHuizong extends BaseCronJob {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR);
-    }
-    public static void main(String[] args) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -4);
-        System.out.println(calendar.getTime());
     }
 }
