@@ -56,6 +56,19 @@ public class JournalGenerator extends BaseCronJob {
                     RecordSet recordSet3 = new RecordSet();
                     recordSet3.executeSql(sql);
                 }
+                sql = "select * from uf_gzrqnew_dt2 where mainid=" + id + " and sfwc=1";
+                while (recordSet2.next()) {
+                    String gzfl = Util.null2String(recordSet2.getString("gzfl"));
+                    String gznr = Util.null2String(recordSet2.getString("gznr"));
+                    String sfwc = Util.null2String(recordSet2.getString("sfwc"));
+                    String yddwt = Util.null2String(recordSet2.getString("yddwt"));
+                    String gjyj = Util.null2String(recordSet2.getString("gjyj"));
+
+                    sql = "insert into uf_gzrqnew_dt2(mainid, gzfl, gznr, sfwc, yddwt, gjyj) " +
+                            "values(" + newid + ", " + gzfl + ", '" + gznr + "', " + sfwc + ", '" + yddwt + "', '" + gjyj + "')";
+                    RecordSet recordSet3 = new RecordSet();
+                    recordSet3.executeSql(sql);
+                }
                 System.out.println("---->Journal OK:" + today + ":" + tbr);
             } else {
                 System.out.println("---->Journal not OK:" + today + ":" + tbr);
