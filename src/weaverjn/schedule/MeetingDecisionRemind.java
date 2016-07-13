@@ -23,6 +23,8 @@ public class MeetingDecisionRemind extends BaseCronJob {
         String sql = "select * " +
                 "from meeting m " +
                 "where m.isdecision != 2 " +
+                "and cancel is null " +
+                "and meetingstatus != 0 " +
                 "and (not exists " +
                 "(select 1 from meeting_decision_remind where id = m.id) or exists " +
                 "(select 1 " +
