@@ -104,4 +104,16 @@ public class tableStringUtils {
         String tag = "<span id='JG_" + id + "span'></span>" + "<input type='hidden' id='JG_" + id + "' style='width:80px;'></input>";
         return tag;
     }
+
+    public static String getDepartmentName(String id) {
+        RecordSet recordSet = new RecordSet();
+        String sql = "select departmentname from hrmdepartment where id=" + id;
+        recordSet.executeSql(sql);
+        String departmentName = "";
+        if (recordSet.next()) {
+            departmentName = Util.null2String(recordSet.getString("departmentname"));
+        }
+        String labelA = "<a href=\"javascript:openFullWindowForXtable('/hrm/HrmTab.jsp?_fromURL=HrmDepartmentDsp&id=" + id + "&hasTree=false')\">" + departmentName + "</a>";
+        return labelA;
+    }
 }
