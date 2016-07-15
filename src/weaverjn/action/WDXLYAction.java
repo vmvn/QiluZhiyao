@@ -1,8 +1,10 @@
 package weaverjn.action;
 
 import weaver.conn.RecordSet;
+import weaver.formmode.setup.ModeRightInfo;
+import weaver.general.Util;
 import weaver.interfaces.workflow.action.BaseAction;
-import weaver.mobile.webservices.workflow.soa.RequestInfo;
+import weaver.soa.workflow.request.RequestInfo;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +23,12 @@ public class WDXLYAction extends BaseAction {
             recordSet.executeSql(sql);
             if (recordSet.next()) {
                 String id = recordSet.getString("id");
+                String syr = Util.null2String(recordSet.getString("syr"));
+                String xmmc = Util.null2String(recordSet.getString("xmmc"));
+                String yjjd = Util.null2String(recordSet.getString("yjjd"));
+                String ph = Util.null2String(recordSet.getString("ph"));
+                String gg = Util.null2String(recordSet.getString("gg"));
+                String bc = Util.null2String(recordSet.getString("bc"));
 
                 SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
                 SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
@@ -32,6 +40,7 @@ public class WDXLYAction extends BaseAction {
                     String fztj = recordSet1.getString("fztj");
                     String syl = recordSet1.getString("syl");
                     String dw = recordSet1.getString("dw");
+                    String sybz = Util.null2String(recordSet1.getString("sybz"));
 
                     sql = "select * from uf_lyfztjwh where id=" + fztj;
                     RecordSet recordSet2 = new RecordSet();
@@ -45,9 +54,56 @@ public class WDXLYAction extends BaseAction {
                             int i = Integer.parseInt(s);
                             Calendar calendar = Calendar.getInstance();
                             String today = sdfDate.format(calendar.getTime());
+                            String timeNow = sdfTime.format(calendar.getTime());
                             calendar.add(dw1, i);
                             String date = sdfDate.format(calendar.getTime());
-                            String time = sdfTime.format(calendar.getTime());
+                            sql = "insert into uf_yjyqy(" +
+                                    "syr, " +
+                                    "xmmc, " +
+                                    "yjjd, " +
+                                    "ph, " +
+                                    "gg, " +
+                                    "bc, " +
+                                    "fztj, " +
+                                    "qysj, " +
+                                    "syl, " +
+                                    "dw, " +
+                                    "sybz, " +
+                                    "FORMMODEID, " +
+                                    "MODEDATACREATER, " +
+                                    "MODEDATACREATERTYPE, " +
+                                    "MODEDATACREATEDATE, " +
+                                    "MODEDATACREATETIME " +
+                                    ") values( " +
+                                    "'" + syr + "', " +
+                                    "'" + xmmc + "', " +
+                                    "'" + yjjd + "', " +
+                                    "'" + ph + "', " +
+                                    "'" + gg + "', " +
+                                    "'" + bc + "', " +
+                                    "'" + fztj + "', " +
+                                    "'" + date + "', " +
+                                    "'" + syl + "', " +
+                                    "'" + dw + "', " +
+                                    "'" + sybz + "', " +
+                                    "'" + 701 + "', " +
+                                    "'" + syr + "', " +
+                                    "'" + 0 + "', " +
+                                    "'" + today + "', " +
+                                    "'" + timeNow + "'" +
+                                    ")";
+                            System.out.println("-------->WDXLYAction:" + sql);
+                            RecordSet recordSet3 = new RecordSet();
+                            if (recordSet3.executeSql(sql)) {
+                                sql = "select max(id) maxid from uf_yjyqy";
+                                RecordSet recordSet4 = new RecordSet();
+                                recordSet4.executeSql(sql);
+                                recordSet4.next();
+                                int maxId = -1;
+                                maxId = recordSet4.getInt("maxid");
+                                ModeRightInfo modeRightInfo = new ModeRightInfo();
+                                modeRightInfo.editModeDataShare(Util.getIntValue(syr), 701, maxId);
+                            }
                         }
                     }
                 }
