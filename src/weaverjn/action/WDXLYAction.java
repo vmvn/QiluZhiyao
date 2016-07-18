@@ -37,6 +37,7 @@ public class WDXLYAction extends BaseAction {
                 RecordSet recordSet1 = new RecordSet();
                 recordSet1.executeSql(sql);
                 while (recordSet1.next()) {
+                    String dtid = recordSet1.getString("id");
                     String fztj = recordSet1.getString("fztj");
                     String syl = recordSet1.getString("syl");
                     String dw = recordSet1.getString("dw");
@@ -58,6 +59,7 @@ public class WDXLYAction extends BaseAction {
                             calendar.add(dw1, i);
                             String date = sdfDate.format(calendar.getTime());
                             sql = "insert into uf_yjyqy(" +
+                                    "dtid, " +
                                     "syr, " +
                                     "xmmc, " +
                                     "yjjd, " +
@@ -67,6 +69,7 @@ public class WDXLYAction extends BaseAction {
                                     "fztj, " +
                                     "qysj, " +
                                     "syl, " +
+                                    "syl1, " +
                                     "dw, " +
                                     "sybz, " +
                                     "FORMMODEID, " +
@@ -75,6 +78,7 @@ public class WDXLYAction extends BaseAction {
                                     "MODEDATACREATEDATE, " +
                                     "MODEDATACREATETIME " +
                                     ") values( " +
+                                    "'" + dtid + "', " +
                                     "'" + syr + "', " +
                                     "'" + xmmc + "', " +
                                     "'" + yjjd + "', " +
@@ -83,6 +87,7 @@ public class WDXLYAction extends BaseAction {
                                     "'" + bc + "', " +
                                     "'" + fztj + "', " +
                                     "'" + date + "', " +
+                                    "'" + syl + "', " +
                                     "'" + syl + "', " +
                                     "'" + dw + "', " +
                                     "'" + sybz + "', " +
