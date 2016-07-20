@@ -48,6 +48,7 @@ public class MeetingDecisionRemind extends BaseCronJob {
                     System.out.println("---->twoDaysAgo:" + sdf.format(twoDaysAgo.getTime()));
                     System.out.println("---->结束时间:" + sdf.format(calenddatetime.getTime()));
                     System.out.println("---->now:" + sdf.format(now.getTime()));
+                    String contacter = Util.null2String(rs.getString("contacter"));
                     String jlr = Util.null2String(rs.getString("jlr"));
                     String name = Util.null2String(rs.getString("name"));
                     String meetingid = Util.null2String(rs.getString("id"));
@@ -57,7 +58,7 @@ public class MeetingDecisionRemind extends BaseCronJob {
                     SysRemindWorkflow sysRemindWorkflow = new SysRemindWorkflow();
                     try {
                         int requestid = 0;
-                        requestid = sysRemindWorkflow.make("请填写会议：" + name + " 的决议", Util.getIntValue(accessorys), 0, Util.getIntValue(projectid), Util.getIntValue(meetingid), 1, jlr, "请填写会议：" + name + " 的决议");
+                        requestid = sysRemindWorkflow.make("请填写会议：" + name + " 的决议", Util.getIntValue(accessorys), 0, Util.getIntValue(projectid), Util.getIntValue(meetingid), 1, contacter, "请填写会议：" + name + " 的决议");
                         if (requestid != 0) {
                             sql = "insert into meeting_decision_remind(id, isremind) values(" + meetingid + ",1)";
                             RecordSet rs1 = new RecordSet();
