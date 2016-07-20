@@ -23,10 +23,12 @@ public class YJYQYAction extends BaseAction {
 
             int newShengYuLiang = syl1 - qyl;
             sql = "update uf_yjyqy set syl1=" + newShengYuLiang + " where dtid=" + dtid + " and id>" + billid;
+            sql = "update uf_yjyqy set syl1=" + newShengYuLiang + " where dtid=" + dtid + " and id>=" + billid;
             System.out.println("-------->YJYQYAction:" + sql);
             recordSet1.executeSql(sql);
             if (jsbj == 1 || jsbj == 2) {
                 sql = "update uf_yjyqy set jsbj=" + jsbj + " where dtid=" + dtid + " and id>" + billid;
+                sql = "delete from uf_yjyqy where dtid=" + dtid + " and id>" + billid;
                 System.out.println("-------->YJYQYAction:jsbj:" + sql);
                 recordSet1.executeSql(sql);
             }
