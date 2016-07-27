@@ -27,7 +27,7 @@ public class CustomJavaCode_20160720104435 extends AbstractCustomSqlConditionJav
         calendar.add(Calendar.DATE, 3);
         String date = simpleDateFormat.format(calendar.getTime());
 
-        String sqlCondition = "(t1.qysj='" + date + "' or t1.qysj<='" + today + "')";
+        String sqlCondition = "(t1.qysj<='" + date + "')";
 
         return sqlCondition;
     }

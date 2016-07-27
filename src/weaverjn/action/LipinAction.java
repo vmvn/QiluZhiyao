@@ -34,22 +34,22 @@ public class LipinAction extends BaseAction {
                 rs1.executeSql(SQL);
                 if (rs1.next()) {
                     String id = Util.null2String(rs1.getString("id"));
-                    SQL = "select mc,sl from " + tablename + "_dt1 where mainid=" + id;
+                    SQL = "select mc,sll from " + tablename + "_dt1 where mainid=" + id;
                     rs1.executeSql(SQL);
                     String mc = "";
-                    String sl = "";
+                    String sll = "";
                     while (rs1.next()) {
                         mc = Util.null2String(rs1.getString("mc"));
-                        sl = Util.null2String(rs1.getString("sl"), "0");
-                        String kcsl = "";
-                        rs2.executeSql("select kcsl from uf_lpjcxx where id=" + mc);
+                        sll = Util.null2String(rs1.getString("sll"), "0");
+                        String kcsll = "";
+                        rs2.executeSql("select kcsll from uf_lpjcxx where id=" + mc);
                         if (rs2.next()) {
-                            kcsl = Util.null2String(rs2.getString("kcsl"), "0");
+                            kcsll = Util.null2String(rs2.getString("kcsll"), "0");
                         }
-                        if ((Util.getIntValue(kcsl) < Util.getIntValue(sl)) && operator.equals("-")) {
-                            err = "库存数量不足！当前库存数量：" + kcsl;
+                        if ((Util.getIntValue(kcsll) < Util.getIntValue(sll)) && operator.equals("-")) {
+                            err = "库存数量不足！当前库存数量：" + kcsll;
                         }else{
-                            rs2.executeSql("update uf_lpjcxx set kcsl=kcsl" + operator + sl + " where id=" + mc);
+                            rs2.executeSql("update uf_lpjcxx set kcsll=kcsll" + operator + sll + " where id=" + mc);
                         }
                     }
                 }

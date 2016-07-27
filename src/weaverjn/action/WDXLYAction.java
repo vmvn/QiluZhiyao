@@ -73,6 +73,7 @@ public class WDXLYAction extends BaseAction {
                                     "dw, " +
                                     "sybz, " +
                                     "lyrq, " +
+                                    "sjjd, " +
                                     "FORMMODEID, " +
                                     "MODEDATACREATER, " +
                                     "MODEDATACREATERTYPE, " +
@@ -93,6 +94,7 @@ public class WDXLYAction extends BaseAction {
                                     "'" + dw + "', " +
                                     "'" + sybz + "', " +
                                     "'" + today + "', " +
+                                    "'" + s + "', " +
                                     "'" + 701 + "', " +
                                     "'" + syr + "', " +
                                     "'" + 0 + "', " +
