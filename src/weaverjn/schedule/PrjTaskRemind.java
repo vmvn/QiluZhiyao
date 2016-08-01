@@ -59,7 +59,8 @@ public class PrjTaskRemind extends BaseCronJob {
                     } else if (sToday.equals(s10DaysAgo)) {
                         content = "提醒：任务-" + subject + " 将于10天后结束！";
                     } else if (Integer.parseInt(sToday.replace("-", "")) > Integer.parseInt(enddate.replace("-", ""))) {
-                        int days = Integer.parseInt(sToday.replace("-", "")) - Integer.parseInt(enddate.replace("-", ""));
+//                        int days = Integer.parseInt(sToday.replace("-", "")) - Integer.parseInt(enddate.replace("-", ""));
+                        int days = (int) (simpleDateFormat.parse(sToday).getTime() - simpleDateFormat.parse(enddate).getTime()) / (24 * 3600 * 1000);
                         content = "提醒：任务-" + subject + " 已到期" + days + "天！";
                     } else {
                         System.out.println("---->Task:" + id + " is OK");
