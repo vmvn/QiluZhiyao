@@ -54,6 +54,8 @@ public class YueduKaoheAction extends BaseAction {
                 }
             } else if (khyd > month) {
                 msg = "考核月度不能超过当前月份";
+            } else if (khyd == month && day <= 15) {
+                msg = "每月1—15号只能提交上个月";
             } else {
                 rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                 if (rs.getCounts() > 0) {
