@@ -11,6 +11,7 @@ import weaver.soa.workflow.request.RequestInfo;
  */
 public class LipinAction extends BaseAction {
     public String execute(RequestInfo requestInfo) {
+        System.out.println("---->LipinAction start");
         RecordSet rs1 = new RecordSet();
         RecordSet rs2 = new RecordSet();
         String requestid = requestInfo.getRequestid();
@@ -49,7 +50,14 @@ public class LipinAction extends BaseAction {
                         if ((Util.getIntValue(kcsll) < Util.getIntValue(sll)) && operator.equals("-")) {
                             err = "库存数量不足！当前库存数量：" + kcsll;
                         }else{
-                            rs2.executeSql("update uf_lpjcxx set kcsll=kcsll" + operator + sll + " where id=" + mc);
+                            System.out.println("---->LipinAction: " + "update uf_lpjcxx set kcsll=kcsll" + operator + sll + " where id=" + mc);
+                            int result;
+                            if (operator.equals("+")) {
+                                result = Integer.parseInt(kcsll) + Integer.parseInt(sll);
+                            } else {
+                                result = Integer.parseInt(kcsll) - Integer.parseInt(sll);
+                            }
+                            rs2.executeSql("update uf_lpjcxx set kcsll=" + result + " where id=" + mc);
                         }
                     }
                 }

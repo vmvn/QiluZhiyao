@@ -13,12 +13,14 @@ public class YueduKaoheAction extends BaseAction {
     public String execute(RequestInfo requestInfo) {
         String requestid = requestInfo.getRequestid();
         RecordSet rs = new RecordSet();
-        String sql = "select khyd2,xm from formtable_main_101 where requestid=" + requestid;
+        String sql = "select khyd2,xm, bkhdw, bkhr from formtable_main_101 where requestid=" + requestid;
         rs.executeSql(sql);
         String msg = "";
         if (rs.next()) {
             int khyd = rs.getInt("khyd2");
             int xm = rs.getInt("xm");
+            int bkhdw = rs.getInt("bkhdw");
+            String bkhr = rs.getString("bkhr");
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
@@ -33,7 +35,8 @@ public class YueduKaoheAction extends BaseAction {
                     if (day > 15) {
                         msg = "本月15日之后不允许提交上月的绩效考核";
                     } else {
-                        rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
+//                        rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
+                        rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                         if (rs.getCounts() > 0) {
                             msg = "上月绩效考核已提交过，不允许重复提交";
                         } else {
@@ -45,7 +48,8 @@ public class YueduKaoheAction extends BaseAction {
                 if (day > 15) {
                     msg = "本月15日之后不允许提交上月的绩效考核";
                 } else {
-                    rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
+//                    rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
+                    rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
                     if (rs.getCounts() > 0) {
                         msg = "上月绩效考核已提交过，不允许重复提交";
                     } else {
@@ -57,7 +61,8 @@ public class YueduKaoheAction extends BaseAction {
             } else if (khyd == month && day <= 15) {
                 msg = "每月1—15号只能提交上个月";
             } else {
-                rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
+//                rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
+                rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                 if (rs.getCounts() > 0) {
                     msg = "上月绩效考核已提交过，不允许重复提交";
                 } else {
