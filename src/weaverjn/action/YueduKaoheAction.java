@@ -14,6 +14,7 @@ public class YueduKaoheAction extends BaseAction {
         String requestid = requestInfo.getRequestid();
         RecordSet rs = new RecordSet();
         String sql = "select khyd2,xm, bkhdw, bkhr from formtable_main_101 where requestid=" + requestid;
+        int flag = 19;
         rs.executeSql(sql);
         String msg = "";
         if (rs.next()) {
@@ -32,8 +33,8 @@ public class YueduKaoheAction extends BaseAction {
                 if (month - khyd > 1) {
                     msg = "不能提交" + (khyd + 1) + "月的绩效考核";
                 } else {
-                    if (day > 15) {
-                        msg = "本月15日之后不允许提交上月的绩效考核";
+                    if (day > flag) {
+                        msg = "本月" + flag + "日之后不允许提交上月的绩效考核";
                     } else {
 //                        rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                         rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
@@ -45,8 +46,8 @@ public class YueduKaoheAction extends BaseAction {
                     }
                 }
             }else if (khyd == 11 && month == 0) {
-                if (day > 15) {
-                    msg = "本月15日之后不允许提交上月的绩效考核";
+                if (day > flag) {
+                    msg = "本月" + flag + "日之后不允许提交上月的绩效考核";
                 } else {
 //                    rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
                     rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
@@ -58,8 +59,8 @@ public class YueduKaoheAction extends BaseAction {
                 }
             } else if (khyd > month) {
                 msg = "考核月度不能超过当前月份";
-            } else if (khyd == month && day <= 15) {
-                msg = "每月1—15号只能提交上个月";
+            } else if (khyd == month && day <= flag) {
+                msg = "每月1—" + flag + "号只能提交上个月";
             } else {
 //                rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                 rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
