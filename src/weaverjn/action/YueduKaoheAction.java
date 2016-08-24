@@ -26,17 +26,56 @@ public class YueduKaoheAction extends BaseAction {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
-//            if (!(day < 15 && khyd + 1 == month)) {
-//                msg = "本月15日之后不允许提交上月的绩效考核";
-//            }
-            if (khyd < month) {
-                if (month - khyd > 1) {
-                    msg = "不能提交" + (khyd + 1) + "月的绩效考核";
+            String gh = rs.getString("gh");
+            double gwzzkhbz = rs.getDouble("gwzzkhbz");
+            double lszdgzkhbz = rs.getInt("lszdgzkhbz");
+            double gzzfkhbz = rs.getInt("gzzfkhbz");
+
+            double bzfz4 = rs.getDouble("bzfz4");
+            double bzfz5 = rs.getDouble("bzfz5");
+            double bzfz6 = rs.getDouble("bzfz6");
+            if (gh.length() >= 5) {
+                if (bzfz4 > gwzzkhbz) {
+                    msg = "岗位职责标准分之和大于总分值";
+                } else if (bzfz5 > lszdgzkhbz) {
+                    msg = "临时重点工作标准分之和大于总分值";
+                } else if (bzfz6 > gzzfkhbz) {
+                    msg = "工作作风标准分之和大于总分值";
                 } else {
-                    if (day > flag) {
-                        msg = "本月" + flag + "日之后不允许提交上月的绩效考核";
-                    } else {
+                    if (khyd < month) {
+                        if (month - khyd > 1) {
+                            msg = "不能提交" + (khyd + 1) + "月的绩效考核";
+                        } else {
+                            if (day > flag) {
+                                msg = "本月" + flag + "日之后不允许提交上月的绩效考核";
+                            } else {
 //                        rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
+                                rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
+                                if (rs.getCounts() > 0) {
+                                    msg = "上月绩效考核已提交过，不允许重复提交";
+                                } else {
+                                    rs.executeSql("update formtable_main_101 set rq2='" + year + "' where requestid=" + requestid);
+                                }
+                            }
+                        }
+                    } else if (khyd == 11 && month == 0) {
+                        if (day > flag) {
+                            msg = "本月" + flag + "日之后不允许提交上月的绩效考核";
+                        } else {
+//                    rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
+                            rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
+                            if (rs.getCounts() > 0) {
+                                msg = "上月绩效考核已提交过，不允许重复提交";
+                            } else {
+                                rs.executeSql("update formtable_main_101 set rq2='" + (year - 1) + "' where requestid=" + requestid);
+                            }
+                        }
+                    } else if (khyd > month) {
+                        msg = "考核月度不能超过当前月份";
+                    } else if (khyd == month && day <= flag) {
+                        msg = "每月1—" + flag + "号只能提交上个月";
+                    } else {
+//                rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                         rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
                         if (rs.getCounts() > 0) {
                             msg = "上月绩效考核已提交过，不允许重复提交";
@@ -45,30 +84,8 @@ public class YueduKaoheAction extends BaseAction {
                         }
                     }
                 }
-            }else if (khyd == 11 && month == 0) {
-                if (day > flag) {
-                    msg = "本月" + flag + "日之后不允许提交上月的绩效考核";
-                } else {
-//                    rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
-                    rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + (year - 1) + "' and requestid!=" + requestid);
-                    if (rs.getCounts() > 0) {
-                        msg = "上月绩效考核已提交过，不允许重复提交";
-                    } else {
-                        rs.executeSql("update formtable_main_101 set rq2='" + (year - 1) + "' where requestid=" + requestid);
-                    }
-                }
-            } else if (khyd > month) {
-                msg = "考核月度不能超过当前月份";
-            } else if (khyd == month && day <= flag) {
-                msg = "每月1—" + flag + "号只能提交上个月";
             } else {
-//                rs.executeSql("select * from formtable_main_101 where xm=" + xm + " and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
-                rs.executeSql("select * from formtable_main_101 where bkhdw=" + bkhdw + " and bkhr='" + bkhr + "' and khyd2=" + khyd + " and rq2='" + year + "'and requestid!=" + requestid);
-                if (rs.getCounts() > 0) {
-                    msg = "上月绩效考核已提交过，不允许重复提交";
-                } else {
-                    rs.executeSql("update formtable_main_101 set rq2='" + year + "' where requestid=" + requestid);
-                }
+                msg = "工号长度应不小于5位！";
             }
         } else {
             msg = "error code: 1";
