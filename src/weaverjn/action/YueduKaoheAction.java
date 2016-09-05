@@ -14,7 +14,7 @@ public class YueduKaoheAction extends BaseAction {
         String requestid = requestInfo.getRequestid();
         RecordSet rs = new RecordSet();
         String sql = "select khyd2,xm, bkhdw, bkhr from formtable_main_101 where requestid=" + requestid;
-        int flag = 19;
+        int flag = 15;
         rs.executeSql(sql);
         String msg = "";
         if (rs.next()) {
