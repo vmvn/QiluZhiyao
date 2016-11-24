@@ -116,4 +116,16 @@ public class tableStringUtils {
         String labelA = "<a href=\"javascript:openFullWindowForXtable('/hrm/HrmTab.jsp?_fromURL=HrmDepartmentDsp&id=" + id + "&hasTree=false')\">" + departmentName + "</a>";
         return labelA;
     }
+
+    public static String getDepartmentNameByUserID(String id) {
+        RecordSet recordSet = new RecordSet();
+        String sql = "select departmentname from hrmdepartment where id=(select departmentid from hrmresource where id=" + id + ")";
+        recordSet.executeSql(sql);
+        String departmentName = "";
+        if (recordSet.next()) {
+            departmentName = Util.null2String(recordSet.getString("departmentname"));
+        }
+        String labelA = "<a href=\"javascript:openFullWindowForXtable('/hrm/HrmTab.jsp?_fromURL=HrmDepartmentDsp&id=" + id + "&hasTree=false')\">" + departmentName + "</a>";
+        return labelA;
+    }
 }
