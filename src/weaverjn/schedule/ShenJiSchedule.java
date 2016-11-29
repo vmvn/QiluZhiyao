@@ -15,7 +15,7 @@ public class ShenJiSchedule extends BaseCronJob {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String today = simpleDateFormat.format(calendar.getTime());
-        String sql = "update uf_sjwtkb set zgsfcq=0 where jhwcrq<'" + today + "' and (zgsfcq is null or zgsfcq = 1) ";
+        String sql = "update uf_sjwtkb set zgsfcq=0 where jhwcrq<'" + today + "' and (zgsfcq is null or zgsfcq = 1) and zt!=3";
         System.out.println("-------->ShenJiSchedule:" + sql);
         recordSet.executeSql(sql);
     }
