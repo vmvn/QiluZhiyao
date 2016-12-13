@@ -18,7 +18,10 @@ import java.util.Iterator;
  * Created by zhaiyaqi on 2016/11/30.
  */
 public class Equipment2OABrowser extends BaseBean {
+    private String c;
+
     public String run(String EQUNR, String company, String EQKTX, String HERST, String TYPBZ, String KOSTL, String TIDNR) {
+        setC(company);
         String datas = "";
         String WERKS = "";
         if (EQUNR.isEmpty()) {
@@ -102,7 +105,7 @@ public class Equipment2OABrowser extends BaseBean {
             if ("S".equals(MSG_TYPE) && "查询成功".equals(MESSAGE)) {
                 Iterator iterator = MT_Equi2OA.elementIterator("Equi_List");
                 ArrayList<String> sqls = new ArrayList<String>();
-                sqls.add("delete from Equipment2OA");
+                sqls.add("delete from Equipment2OA where company=" + getC());
                 while (iterator.hasNext()) {
                     Element e = (Element) iterator.next();
                     s.append("<bean>");
@@ -191,7 +194,8 @@ public class Equipment2OABrowser extends BaseBean {
     private String getsql(String EQUNR, String EQKTX, String EQART, String TYPBZ, String INBDT, String TPLNR,
                            String HERST, String TIDNR, String KOSTL, String ANLNR, String ANLN2, String SRC_VALUE, String NET_VALUE) {
 
-        return "insert into Equipment2OA(EQUNR,EQKTX,EQART,TYPBZ,INBDT,TPLNR,HERST,TIDNR,KOSTL,ANLNR,ANLN2,SRC_VALUE,NET_VALUE) values(" +
+        return "insert into Equipment2OA(company,EQUNR,EQKTX,EQART,TYPBZ,INBDT,TPLNR,HERST,TIDNR,KOSTL,ANLNR,ANLN2,SRC_VALUE,NET_VALUE) values(" +
+                "'" + getC() + "'," +
                 "'" + EQUNR + "'," +
                 "'" + EQKTX + "'," +
                 "'" + EQART + "'," +
@@ -212,5 +216,13 @@ public class Equipment2OABrowser extends BaseBean {
         Equipment2OABrowser t = new Equipment2OABrowser();
         String s = t.run("", "63", "", "", "", "", "");
         System.out.println(s);
+    }
+
+    public String getC() {
+        return c;
+    }
+
+    public void setC(String c) {
+        this.c = c;
     }
 }
