@@ -20,7 +20,8 @@ import java.util.Map;
  */
 public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
     @Override
-    public ArrayList<ZGSDWWXSQrequestid> createWorkflow(ZGSDWWXSQparameters parameters) {
+    public void createWorkflow(ZGSDWWXSQparameters parameters) {
+        log("----<ZSGDWWXSQimpl>" + new Date());
         ZGSDWWXSQparameter[] p = parameters.getZGSDWWXSQparameters();
         workflowBaseInfo w = parameters.getWorkflowBaseInfo();
         Map<String, ArrayList<ZGSDWWXSQparameter>> m = new HashMap<String, ArrayList<ZGSDWWXSQparameter>>();
@@ -40,10 +41,18 @@ public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
         for (Map.Entry<String, ArrayList<ZGSDWWXSQparameter>> entry : m.entrySet()) {
             ZGSDWWXSQrequestid requestid = new ZGSDWWXSQrequestid();
             requestid.setREQ_NO(entry.getKey());
-            requestid.setRequestid(doCreateWorkflow(entry.getValue(), w));
+            String r = doCreateWorkflow(entry.getValue(), w);
+            requestid.setRequestid(r);
             requestids.add(requestid);
         }
-        return requestids;
+        ZGSDWWXSQrequestid[] a = new ZGSDWWXSQrequestid[requestids.size()];
+        for (int i = 0; i < requestids.size(); i++) {
+            a[i] = requestids.get(i);
+        }
+        new ZSGDWWXSQsendStatus().sendStatus(a);
+        ZGSDWWXSQresponse responseInfo = new ZGSDWWXSQresponse();
+        responseInfo.setResponseInfo(a);
+//        return responseInfo;
     }
 
     private String doCreateWorkflow(ArrayList<ZGSDWWXSQparameter> a, workflowBaseInfo w) {
@@ -224,7 +233,7 @@ public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
 
     private String getDepartmentIDByUserID(String userid) {
         RecordSet recordSet = new RecordSet();
-        String sql = "select departmentid from hrmresource where id=" + userid;
+        String sql = "select departmentid from hrmresource where id='" + userid + "'";
         recordSet.executeSql(sql);
         String departmentid = "";
         if (recordSet.next()) {
@@ -244,5 +253,10 @@ public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
             e.printStackTrace();
         }
         return requestid;
+    }
+
+    private void log(Object o) {
+        System.out.println(o);
+        writeLog(o);
     }
 }

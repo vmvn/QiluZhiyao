@@ -6,7 +6,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import weaver.conn.RecordSet;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -110,6 +109,7 @@ public class WSClientUtils {
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
             if (statusCode != HttpStatus.SC_OK) {
+                System.out.println("----<>status code" + statusCode);
                 throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";" + serviceEpr + ";" + soapRequest);
             }
 

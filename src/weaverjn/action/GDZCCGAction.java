@@ -1,17 +1,8 @@
 package weaverjn.action;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
@@ -19,6 +10,12 @@ import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaverjn.qlzy.sap.WSClientUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+
+//固定资产采购
 public class GDZCCGAction extends BaseBean implements Action {
 	public String execute(RequestInfo paramRequestInfo) {
 		log("---->GDZCCGAction run");
@@ -27,11 +24,10 @@ public class GDZCCGAction extends BaseBean implements Action {
 			String requestid = paramRequestInfo.getRequestid();
 
 			RecordSet rs = new RecordSet();
-			RecordSet rse = new RecordSet();
 			String maintable = "";
 			//查询主表表名
-			String strT = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + workflowid;
-			rs.executeSql(strT);
+			String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + workflowid;
+			rs.executeSql(sql);
 			while (rs.next()) {
 				maintable = Util.null2String(rs.getString("tablename"));
 			}
@@ -42,63 +38,65 @@ public class GDZCCGAction extends BaseBean implements Action {
 
 			String paramstr = "";
 			String sqlStr = "";
-			String gcbm = "";
 			String mainid = "";
 			String sqr = "";
 			sqlStr = "select * from " + maintable + " where requestid=" + requestid;
 			rs.executeSql(sqlStr);
 			while (rs.next()) {
-				gcbm = Util.null2String(rs.getString("gcbm"));
 				mainid = Util.null2String(rs.getString("id"));
-				sqr = getEmpName(Util.null2String(rs.getString("sqr")));
+				sqr = Util.null2String(rs.getString("sqr"));
 			}
 
 			sqlStr = "select * from " + maintable + "_dt1 where mainid=" + mainid + " order by id asc";
 			rs.executeSql(sqlStr);
-			String id = "";
-			String ASSET_DESC = "";
-			String EQTYP = "";
-			String EQART = "";
-			String TYPBZ = "";
-			String KOSTL = "";
-			String QUANTITY = "";
-			String DELIVERY_DATE = "";
-			String PREIS = "";
-			String WAERS = "";
-			int i = 1;
-			String clzt = "";
+			String ASSET_DESC;
+			String EQTYP;
+			String EQART;
+			String TYPBZ;
+			String KOSTL;
+			String QUANTITY;
+			String DELIVERY_DATE;
+			String PREIS;
+			String WAERS;
+			String PLANT = "";
+			String OAREQ_NO = "" + requestid;
+			String OAREQ_ITEM;
+			String REQUISITIONER = getLastName(sqr);;
+
 			while (rs.next()) {
-//				clzt = Util.null2String(rs.getString("clzt"));
-//				if("1".equals(clzt)||"3".equals(clzt)){
-//					i++;
-//					continue;
-//				}
-				//id = Util.null2String(rs.getString("id"));
+				OAREQ_ITEM = rs.getString("id");
+				PLANT = getCompanyCode(Util.null2String(rs.getString("gc")));
 				ASSET_DESC = Util.null2String(rs.getString("sbmc")); //设备名称 资产描述
+
 				EQTYP = getSelectName("24022", Util.null2String(rs.getString("sbzlmc")));//设备种类名称
 				EQART = getSelectName("24021", Util.null2String(rs.getString("sbflmc")));//设备分类名称
+				//new
+				EQTYP = getEQTYP(Util.null2String(rs.getString("sbzl")));
+				EQART = getEQART(Util.null2String(rs.getString("sbfl")));
+
 				TYPBZ = Util.null2String(rs.getString("ggxh")); //规格型号
-				KOSTL = Util.null2String(rs.getString("cbzx")); //成本中心
+				KOSTL = Util.null2String(rs.getString("cbzxsap")); //成本中心
 				QUANTITY = Util.null2String(rs.getString("sl")); //数量
 				DELIVERY_DATE = Util.null2String(rs.getString("yqgjrq")); //要求购进日期
 				PREIS = Util.null2String(rs.getString("ybzje")); //单价-oa本币总金额
-				WAERS = Util.null2String(rs.getString("bz")); //币种
+				WAERS = getCurrency(Util.null2String(rs.getString("bzllan"))); //币种
+
 				paramstr = paramstr +
 						"<OAAsset_Req>" +
-						"<OAREQ_NO>" + requestid + "</OAREQ_NO>" +
-						"<OAREQ_ITEM>" + i + "</OAREQ_ITEM>" +
+						"<OAREQ_NO>" + OAREQ_NO + "</OAREQ_NO>" +
+						"<OAREQ_ITEM>" + OAREQ_ITEM + "</OAREQ_ITEM>" +
 						"<ASSET_DESC>" + ASSET_DESC + "</ASSET_DESC>" +
 						"<EQTYP>" + EQTYP + "</EQTYP>" +
 						"<EQART>" + EQART + "</EQART>" +
 						"<EQKTX>" + ASSET_DESC + "</EQKTX>" +
 						"<TYPBZ>" + TYPBZ + "</TYPBZ>" +
 						"<KOSTL>" + KOSTL + "</KOSTL>" +
-						"<PLANT>" + gcbm + "</PLANT>" +
+						"<PLANT>" + PLANT + "</PLANT>" +
 						"<QUANTITY>" + QUANTITY + "</QUANTITY>" +
 						"<DELIVERY_DATE>" + DELIVERY_DATE + "</DELIVERY_DATE>" +
 						"<PREIS>" + PREIS + "</PREIS>" +
 						"<WAERS>" + WAERS + "</WAERS>" +
-						"<REQUISITIONER>" + sqr + "</REQUISITIONER>" +
+						"<REQUISITIONER>" + REQUISITIONER + "</REQUISITIONER>" +
 						"<NOTES></NOTES>" +
 						"<AddiInfo>" +
 						"<Additional1></Additional1>" +
@@ -107,33 +105,32 @@ public class GDZCCGAction extends BaseBean implements Action {
 						"<Additional4></Additional4>" +
 						"</AddiInfo>" +
 						"</OAAsset_Req>";
-				i++;
 			}
 
-			String reStr = "";
-			String status = "";
 			String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">" +
 					"<soapenv:Header/><soapenv:Body><erp:MT_OAAsset_Req>" +
 					"<ControlInfo>" +
 					"<INTF_ID>I0008</INTF_ID>" +
 					"<Src_System>OA</Src_System>" +
 					"<Dest_System>SAPERP</Dest_System>" +
-					"<Company_Code>" + gcbm + "</Company_Code>" +
+					"<Company_Code></Company_Code>" +
 					"<Send_Time>" + dateStr + "</Send_Time>" +
 					"</ControlInfo>" + paramstr +
 					"</erp:MT_OAAsset_Req>" +
 					"</soapenv:Body>" +
 					"</soapenv:Envelope>";
 
-			log(request);
+			log("----<GDZCCGAction>" + request);
 			HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
 			httpHeaderParm.put("instId", "10062");
 			httpHeaderParm.put("repairType", "RP");
-			String s = WSClientUtils.callWebServiceWithHttpHeaderParm(request,
+			String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request,
 					"http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_OAAsset_Req_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/",
 					httpHeaderParm);
-			log(s);
-			Document dom = DocumentHelper.parseText(s);
+			log("----<GDZCCGAction>" + response);
+
+			//处理response
+			Document dom = DocumentHelper.parseText(response);
 			Element root = dom.getRootElement();
 			Iterator iters = root.elementIterator("Body");
 			while (iters.hasNext()) {
@@ -146,27 +143,14 @@ public class GDZCCGAction extends BaseBean implements Action {
 						Element itemEle = (Element) itersElIterator.next();
 						String MSG_TYPE = itemEle.elementTextTrim("MSG_TYPE");
 						String MESSAGE = itemEle.elementTextTrim("MESSAGE");
-						//String REQNO = itemEle.elementTextTrim("MESSAGE");
 						if ("E".equals(MSG_TYPE)) {
 							paramRequestInfo.getRequestManager().setMessageid("90031");
 							paramRequestInfo.getRequestManager().setMessagecontent(MESSAGE);
 							return Action.FAILURE_AND_CONTINUE;
 						}
-//		                if("E".equals(MSG_TYPE)){
-//		                	reStr += MESSAGE;
-//		                	status = "2";
-//		                }
-//		                if("S".equals(MSG_TYPE)){
-//		                	status = "1";
-//		                }
-//		                if("W".equals(MSG_TYPE)){
-//		                	status = "2";
-//		                }
-//		                rse.execute("update "+maintable+"_dt1 set clzt="+status+",fkxx='"+MESSAGE+"' where id="+REQNO);
 					}
 				}
 			}
-
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -190,21 +174,68 @@ public class GDZCCGAction extends BaseBean implements Action {
 		}
 	}
 
-	private String getEmpName(String id) {
-		if ("".equals(id)) {
-			return "";
-		}
-		RecordSet rs = new RecordSet();
-		rs.executeSql("select lastname from hrmresource where id=" + id);
-		if (rs.next()) {
-			return Util.null2String(rs.getString("lastname"));
-		} else {
-			return "";
-		}
-	}
-
 	private void log(Object o) {
 		writeLog(o);
 		System.out.println(o);
+	}
+
+	private String getCompanyCode(String id) {
+		RecordSet recordSet = new RecordSet();
+		String sql = "select gcbm from uf_sapjcsj_gc where id='" + id + "'";
+		recordSet.executeSql(sql);
+		String CompanyCode = "";
+		if (recordSet.next()) {
+			CompanyCode = recordSet.getString("gcbm");
+		}
+		return CompanyCode;
+	}
+
+	private String getLastName(String id) {
+		RecordSet recordSet = new RecordSet();
+		String sql = "select * \n" +
+				"from\n" +
+				"(select id,lastname from hrmresource\n" +
+				"union\n" +
+				"select id,lastname from hrmresourcemanager) t\n" +
+				"where t.id=" + id;
+		recordSet.executeSql(sql);
+		String LastName = "";
+		if (recordSet.next()) {
+			LastName = recordSet.getString("lastname");
+		}
+		return LastName;
+	}
+
+	private String getEQTYP(String id) {
+		RecordSet recordSet = new RecordSet();
+		String sql = "select sbzldm from uf_sapjcsj_sbzl where id='" + id + "'";
+		recordSet.executeSql(sql);
+		String EQTYP = "";
+		if (recordSet.next()) {
+			EQTYP = recordSet.getString("sbzldm");
+		}
+		return EQTYP;
+	}
+
+	private String getEQART(String id) {
+		RecordSet recordSet = new RecordSet();
+		String sql = "select sbfldm from uf_sapjcsj_sbfl where id='" + id + "'";
+		recordSet.executeSql(sql);
+		String EQART = "";
+		if (recordSet.next()) {
+			EQART = recordSet.getString("sbfldm");
+		}
+		return EQART;
+	}
+
+	private String getCurrency(String id) {
+		RecordSet recordSet = new RecordSet();
+		String sql = "select bzdm from uf_sapjcsj_bz where id='" + id + "'";
+		recordSet.executeSql(sql);
+		String Currency = "";
+		if (recordSet.next()) {
+			Currency = recordSet.getString("bzdm");
+		}
+		return Currency;
 	}
 }

@@ -26,6 +26,7 @@ public class XMJDAction extends BaseAction {
             String czwt = Util.null2String(recordSet.getString("czwt"));
             String jjcs = Util.null2String(recordSet.getString("jjcs"));
             String xgxm = Util.null2String(recordSet.getString("xgxm"));
+            String ztjz = Util.null2String(recordSet.getString("ztjz"));
 
             sql = "update Prj_ProjectInfo set " +
                     "gznr='" + gznr + "', " +
@@ -36,6 +37,7 @@ public class XMJDAction extends BaseAction {
                     "bzgzjz='" + gzjz + "', " +
                     "xzgzjh='" + gzjh + "', " +
                     "czdwt='" + czwt + "', " +
+                    "xmztjz='" + ztjz + "', " +
                     "jjcs='" + jjcs + "' " +
                     "where id=" + xgxm;
             if(!recordSet.executeSql(sql)){

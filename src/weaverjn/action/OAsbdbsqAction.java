@@ -5,8 +5,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import weaver.conn.RecordSet;
+import weaver.general.BaseBean;
 import weaver.general.Util;
-import weaver.interfaces.workflow.action.BaseAction;
+import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
 import weaverjn.qlzy.sap.WSClientUtils;
@@ -19,8 +20,9 @@ import java.util.Iterator;
 /**
  * Created by zhaiyaqi on 2016/11/19.
  */
-public class OAsbdbsqAction extends BaseAction {
+public class OAsbdbsqAction extends BaseBean implements Action {
     public String execute(RequestInfo requestInfo) {
+        log("---->OAsbdbsqAction run");
         RequestManager requestManager = requestInfo.getRequestManager();
         String src = requestManager.getSrc();
         String message = "";
@@ -36,7 +38,7 @@ public class OAsbdbsqAction extends BaseAction {
             recordSet.executeSql(sql);
             if (recordSet.next()) {
                 int id = recordSet.getInt("id");
-                String gcbm = Util.null2String(recordSet.getString("gcbm"));
+                String gcbm = getGCBM(Util.null2String(recordSet.getString("gcbm")));
 
                 String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                         "   <soapenv:Header/>\n" +
@@ -45,7 +47,7 @@ public class OAsbdbsqAction extends BaseAction {
                         "         <ControlInfo>\n" +
                         "            <INTF_ID>I0011</INTF_ID>\n" +
                         "            <Src_System>OA</Src_System>\n" +
-                        "            <Dest_System>SAPERP\n</Dest_System>\n" +
+                        "            <Dest_System>SAPERP</Dest_System>\n" +
                         "            <Company_Code>" + gcbm + "</Company_Code>\n" +
                         "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
                         "         </ControlInfo>\n" +
@@ -54,23 +56,25 @@ public class OAsbdbsqAction extends BaseAction {
                         "      </erp:MT_Equi_Allot_Import>\n" +
                         "   </soapenv:Body>\n" +
                         "</soapenv:Envelope>";
+                log(request);
                 HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
                 String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Equi_Allot_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
                 httpHeaderParm.put("instId", "10062");
                 httpHeaderParm.put("repairType", "RP");
                 String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
+                log("---->" + response);
                 message = setStatus(response, t, id);
             }
         }
         if (!message.isEmpty()) {
-            requestInfo.getRequestManager().setMessageid("90031");
+            requestInfo.getRequestManager().setMessageid("Returned Message");
             requestInfo.getRequestManager().setMessagecontent(message);
         }
         return SUCCESS;
     }
 
     private String getDetails(int mainid, String t) {
-        String sql = "select * from " + t + "_dt1 where mainid=" + mainid + " and (clzt=0 or clzt=2)";
+        String sql = "select * from " + t + "_dt1 where mainid=" + mainid + " and (clzt=0 or clzt=2 or clzt is null)";
         RecordSet recordSet = new RecordSet();
         recordSet.executeSql(sql);
         String v = "";
@@ -78,7 +82,7 @@ public class OAsbdbsqAction extends BaseAction {
             v += "<Equi_Import>\n" +
                     "<EQUNR>" + Util.null2String(recordSet.getString("sbbh")) + "</EQUNR>\n" +
                     "<KTX01>" + Util.null2String(recordSet.getString("sbmc")) + "</KTX01>\n" +
-                    "<TPLNR>" + Util.null2String(recordSet.getString("drgnwzdm")) + "</TPLNR>\n" +
+                    "<TPLNR>" + Util.null2String(recordSet.getString("TPLNR")) + "</TPLNR>\n" +
                     "</Equi_Import>\n";
         }
         return v;
@@ -127,7 +131,19 @@ public class OAsbdbsqAction extends BaseAction {
         return v;
     }
 
-    public static void main(String[] args) {
+    private void log(Object o) {
+        writeLog(o);
+        System.out.println(o);
+    }
 
+    private String getGCBM(String id) {
+        RecordSet recordSet = new RecordSet();
+        String sql = "select gcbm from uf_sapjcsj_gc where id=" + id;
+        String gcbm = "";
+        recordSet.executeSql(sql);
+        if (recordSet.next()) {
+            gcbm = recordSet.getString("gcbm");
+        }
+        return gcbm;
     }
 }

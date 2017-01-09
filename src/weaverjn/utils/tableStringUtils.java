@@ -3,6 +3,7 @@ package weaverjn.utils;
 import weaver.conn.RecordSet;
 import weaver.general.Util;
 
+import java.net.URLEncoder;
 import java.util.Calendar;
 
 /**
@@ -127,5 +128,21 @@ public class tableStringUtils {
         }
         String labelA = "<a href=\"javascript:openFullWindowForXtable('/hrm/HrmTab.jsp?_fromURL=HrmDepartmentDsp&id=" + id + "&hasTree=false')\">" + departmentName + "</a>";
         return labelA;
+    }
+
+    public static String getURL(String requestid, String userid) {
+        RecordSet recordSet = new RecordSet();
+        String sql = "select * from all_todolist where requestid=" + requestid + " and userid=" + userid;
+        recordSet.executeSql(sql);
+        recordSet.next();
+        String ao = recordSet.getString("anotheroa");
+        String requestname = recordSet.getString("requestname");
+        String tourl = "";
+        if (ao.equals("0")) {
+            tourl = "/workflow/request/ViewRequest.jsp?requestid=" + requestid + "&isovertime=0";
+        } else {
+            tourl = "http://192.168.1.20/weaverjn/qiluzhiyao/sso/ssobyuserid.jsp?tourl=" + URLEncoder.encode("http://192.168.1.20/workflow/request/ViewRequest.jsp?requestid=" + requestid + "&isovertime=0") + "&userid=" + userid;
+        }
+        return "<a href='" + tourl + "' target='_blank'>" + requestname + "</a>";
     }
 }
