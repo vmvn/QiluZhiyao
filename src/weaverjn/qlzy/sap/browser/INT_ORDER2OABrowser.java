@@ -4,7 +4,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaverjn.qlzy.sap.WSClientUtils;
 
@@ -27,7 +26,7 @@ public class INT_ORDER2OABrowser extends BaseBean {
         setCom(company);
         String datas = "";
         String BUKRS = "";
-        if(company.equals("63")){
+        if(company.equals("63")||company.equals("1")||company.equals("82")){
             BUKRS = "1010";
             datas = getDatas(Company_Code, AUFNR, KTEXT, BUKRS);
         }else if(company.equals("62")){

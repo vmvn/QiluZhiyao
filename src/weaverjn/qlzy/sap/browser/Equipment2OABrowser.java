@@ -4,12 +4,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import weaver.conn.RecordSet;
-import weaver.conn.RecordSetTrans;
 import weaver.general.BaseBean;
 import weaverjn.qlzy.sap.WSClientUtils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +26,7 @@ public class Equipment2OABrowser extends BaseBean {
         String datas = "";
         String WERKS = "";
         if (EQUNR.isEmpty()) {
-            EQUNR = "*";
+            EQUNR = "";
         }
         if (EQKTX.isEmpty()) {
             EQKTX = "*";
@@ -42,7 +43,7 @@ public class Equipment2OABrowser extends BaseBean {
         if (TIDNR.isEmpty()) {
             TIDNR = "*";
         }
-        if(company.equals("63")){
+        if(company.equals("63")||company.equals("1")||company.equals("82")){
             WERKS = "1010";
             datas = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
         }else if(company.equals("62")){
@@ -122,6 +123,7 @@ public class Equipment2OABrowser extends BaseBean {
                     s.append("<ANLN2>").append(e.elementText("ANLN2")).append("</ANLN2>");
                     s.append("<SRC_VALUE>").append(e.elementText("SRC_VALUE")).append("</SRC_VALUE>");
                     s.append("<NET_VALUE>").append(e.elementText("NET_VALUE")).append("</NET_VALUE>");
+                    s.append("<INGRP>").append(e.elementText("INGRP")).append("</INGRP>");
                     s.append("</bean>");
                     String a = getsql(
                             e.elementText("EQUNR"),

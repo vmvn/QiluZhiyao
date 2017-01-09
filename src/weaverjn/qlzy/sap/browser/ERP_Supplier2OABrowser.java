@@ -16,64 +16,39 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * Created by zhaiyaqi on 2016/12/2.
+ * Created by zhaiyaqi on 2017/1/4.
  */
-public class KOSTL2OABrowser extends BaseBean {
-    private String com;
-    public String run(String Company_Code, String KOSTL, String KTEXT, String company) {
-        setCom(company);
-        String datas = "";
-        String BUKRS = "";
-        if(company.equals("63")||company.equals("1")||company.equals("82")){
-            BUKRS = "1010";
-            datas = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-        }else if(company.equals("62")){
-            BUKRS = "1030";
-            datas = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-        }else if(company.equals("143")){
-            BUKRS = "1060";
-            datas = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-        }else if(company.equals("121")){
-            BUKRS = "1070";
-            datas = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-        }else if(company.equals("142")){
-            BUKRS = "1630";
-            datas = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-        } else if (company.equals("61")) {
-            BUKRS = "1610";
-            String s1 = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-            BUKRS = "1620";
-            String s2 = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
-            datas = s1.replace("</list>", "") + s2.replace("<list>", "");
-        }
-        return datas;
+public class ERP_Supplier2OABrowser extends BaseBean {
+    public String run(String LIFNR, String LIFNR_NAME) {
+        return getDatas(LIFNR, LIFNR_NAME);
     }
-    private String getDatas(String Company_Code, String KOSTL, String KTEXT, String BUKRS) {
+    private String getDatas(String LIFNR, String LIFNR_NAME) {
         String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
-                "      <erp:MT_KOSTL_OAReq>\n" +
+                "      <erp:MT_Supplier_Req>\n" +
                 "         <ControlInfo>\n" +
-                "            <INTF_ID>I0033</INTF_ID>\n" +
+                "            <INTF_ID>I0051</INTF_ID>\n" +
                 "            <Src_System>OA</Src_System>\n" +
                 "            <Dest_System>SAPERP</Dest_System>\n" +
-                "            <Company_Code>" + Company_Code + "</Company_Code>\n" +
+                "            <Company_Code></Company_Code>\n" +
                 "            <Send_Time></Send_Time>\n" +
                 "         </ControlInfo>\n" +
-                "         <Search_Condition>\n" +
-                "            <KOSTL>" + KOSTL + "</KOSTL>\n" +
-                "            <KTEXT>" + KTEXT + "</KTEXT>\n" +
-                "            <BUKRS>" + BUKRS + "</BUKRS>\n" +
-                "         </Search_Condition>\n" +
-                "      </erp:MT_KOSTL_OAReq>\n" +
+                "         <!--Optional:-->\n" +
+                "         <Supplier_Req>\n" +
+                "            <LIFNR>" + LIFNR + "</LIFNR>\n" +
+                "            <LIFNR_NAME>" + LIFNR_NAME + "</LIFNR_NAME>\n" +
+                "         </Supplier_Req>\n" +
+                "      </erp:MT_Supplier_Req>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
         HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-        String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_KOSTL_OAReq_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
+        String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Supplier_Req_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
         httpHeaderParm.put("instId", "10062");
         httpHeaderParm.put("repairType", "RP");
         String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
         String datas = parseData(response);
+        datas = datas.replaceAll("&", "&amp;");
 //        log(datas);
         return datas;
     }
@@ -84,18 +59,18 @@ public class KOSTL2OABrowser extends BaseBean {
         try {
             Document dom = DocumentHelper.parseText(string);
             Element root = dom.getRootElement();
-            Element MT_KOSTL2OA = root.element("Body").element("MT_KOSTL2OA");
+            Element MT_KOSTL2OA = root.element("Body").element("MT_Supplier_Ret");
 
-            Iterator iterator = MT_KOSTL2OA.elementIterator("ListOfKostls");
+            Iterator iterator = MT_KOSTL2OA.elementIterator("Supplier_Ret");
             ArrayList<String> sqls = new ArrayList<String>();
-            sqls.add("delete from KOSTL2OA where company=" + getCom());
+            sqls.add("delete from ERP_Supplier2OA");
             while (iterator.hasNext()) {
                 Element e = (Element) iterator.next();
                 s.append("<bean>");
-                s.append("<KOSTL>").append(e.elementText("KOSTL")).append("</KOSTL>");
-                s.append("<KTEXT>").append(e.elementText("KTEXT")).append("</KTEXT>");
+                s.append("<LIFNR>").append(e.elementText("LIFNR")).append("</LIFNR>");
+                s.append("<LIFNR_NAME>").append(e.elementText("LIFNR_NAME")).append("</LIFNR_NAME>");
                 s.append("</bean>");
-                sqls.add(getsql(e.elementText("KOSTL"), e.elementText("KTEXT")));
+                sqls.add(getsql(e.elementText("LIFNR"), e.elementText("LIFNR_NAME")));
             }
             exesql(sqls);
         } catch (DocumentException e) {
@@ -110,11 +85,10 @@ public class KOSTL2OABrowser extends BaseBean {
         System.out.println(o);
     }
 
-    private String getsql(String KOSTL, String KTEXT) {
-        return "insert into KOSTL2OA(company,KOSTL,KTEXT) values(" +
-                "'" + getCom() + "'," +
-                "'" + KOSTL + "'," +
-                "'" + KTEXT + "'" +
+    private String getsql(String LIFNR, String LIFNR_NAME) {
+        return "insert into ERP_Supplier2OA(LIFNR,LIFNR_NAME) values(" +
+                "'" + LIFNR + "'," +
+                "'" + LIFNR_NAME + "'" +
                 ")";
     }
 
@@ -156,15 +130,7 @@ public class KOSTL2OABrowser extends BaseBean {
     }
 
     public static void main(String[] args) {
-        KOSTL2OABrowser t = new KOSTL2OABrowser();
-        t.run("", "", "", "63");
-    }
-
-    public String getCom() {
-        return com;
-    }
-
-    public void setCom(String com) {
-        this.com = com;
+        ERP_Supplier2OABrowser t = new ERP_Supplier2OABrowser();
+        System.out.println(t.run("", "*"));
     }
 }
