@@ -23,7 +23,7 @@ public class OAMaterialSearchBrowser extends BaseBean {
     public String run(String Company_Code, String MATNR, String MAKTX, String company, String MATKL) {
         setCom(company);
         String datas = "";
-        String WERKS = "";
+        String WERKS;
         if(company.equals("63")||company.equals("1")||company.equals("82")){
             WERKS = "1010";
             datas = getDatas(Company_Code, MATNR, MAKTX, WERKS, MATKL);
@@ -75,6 +75,7 @@ public class OAMaterialSearchBrowser extends BaseBean {
         httpHeaderParm.put("instId", "10062");
         httpHeaderParm.put("repairType", "RP");
         String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
+        log("----<M>" + response);
         String datas = parseData(response);
         datas = datas.replaceAll("&", "&amp;");
 //        log(datas);
@@ -100,8 +101,9 @@ public class OAMaterialSearchBrowser extends BaseBean {
                 s.append("<MEINS>").append(e.elementText("MEINS")).append("</MEINS>");
                 s.append("<WERKS>").append(e.elementText("WERKS")).append("</WERKS>");
                 s.append("<MATKL>").append(e.elementText("MATKL")).append("</MATKL>");
+                s.append("<GROES>").append(e.elementText("GROES")).append("</GROES>");
                 s.append("</bean>");
-                sqls.add(getsql(e.elementText("MATNR"), e.elementText("MAKTX"), e.elementText("MEINS"), e.elementText("WERKS"), e.elementText("MATKL")));
+                sqls.add(getsql(e.elementText("MATNR"), e.elementText("MAKTX"), e.elementText("MEINS"), e.elementText("WERKS"), e.elementText("MATKL"), e.elementText("GROES")));
             }
             exesql(sqls);
         } catch (DocumentException e) {
@@ -153,14 +155,15 @@ public class OAMaterialSearchBrowser extends BaseBean {
         }
     }
 
-    private String getsql(String MATNR, String MAKTX, String MEINS, String WERKS, String MATKL) {
-        return "insert into OAMaterialSearch(company,MATNR,MAKTX,MEINS,WERKS,MATKL) values(" +
+    private String getsql(String MATNR, String MAKTX, String MEINS, String WERKS, String MATKL, String GROES) {
+        return "insert into OAMaterialSearch(company,MATNR,MAKTX,MEINS,WERKS,MATKL,GROES) values(" +
                 "'" + getCom() + "'," +
                 "'" + MATNR + "'," +
                 "'" + MAKTX + "'," +
                 "'" + MEINS + "'," +
                 "'" + WERKS + "'," +
-                "'" + MATKL + "'" +
+                "'" + MATKL + "'," +
+                "'" + GROES + "'" +
                 ")";
     }
 

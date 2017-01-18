@@ -5,5 +5,5 @@ package weaverjn.qlzy.sap.webservice.oa.workflow;
  */
 public interface ZGSDWWXSQ {
     //总公司对外维修申请
-    void createWorkflow(ZGSDWWXSQparameters parameters);
+    ZGSDWWXSQresponse createWorkflow(ZGSDWWXSQparameters parameters);
 }

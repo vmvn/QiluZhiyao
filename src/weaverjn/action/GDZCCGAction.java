@@ -18,7 +18,7 @@ import java.util.Iterator;
 //固定资产采购
 public class GDZCCGAction extends BaseBean implements Action {
 	public String execute(RequestInfo paramRequestInfo) {
-		log("---->GDZCCGAction run");
+		log("run");
 		try {
 			String workflowid = paramRequestInfo.getWorkflowid();
 			String requestid = paramRequestInfo.getRequestid();
@@ -120,7 +120,7 @@ public class GDZCCGAction extends BaseBean implements Action {
 					"</soapenv:Body>" +
 					"</soapenv:Envelope>";
 
-			log("----<GDZCCGAction>" + request);
+			log(request);
 			HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
 			httpHeaderParm.put("instId", "10062");
 			httpHeaderParm.put("repairType", "RP");
@@ -147,6 +147,12 @@ public class GDZCCGAction extends BaseBean implements Action {
 							paramRequestInfo.getRequestManager().setMessageid("90031");
 							paramRequestInfo.getRequestManager().setMessagecontent(MESSAGE);
 							return Action.FAILURE_AND_CONTINUE;
+						} else {
+							String requestID = itemEle.elementText("OAREQ_NO");
+							String dt1id = itemEle.elementText("OAREQ_ITEM");
+							String EQUIPMENT_NO = itemEle.elementText("EQUIPMENT_NO");
+							String ASSET_NO = itemEle.elementText("ASSET_NO");
+							WriteBack(maintable, requestID, dt1id, EQUIPMENT_NO, ASSET_NO);
 						}
 					}
 				}
@@ -175,8 +181,9 @@ public class GDZCCGAction extends BaseBean implements Action {
 	}
 
 	private void log(Object o) {
-		writeLog(o);
-		System.out.println(o);
+		String prefix = "<" + this.getClass().getName() + ">";
+		writeLog(prefix + o);
+		System.out.println(prefix + o);
 	}
 
 	private String getCompanyCode(String id) {
@@ -237,5 +244,17 @@ public class GDZCCGAction extends BaseBean implements Action {
 			Currency = recordSet.getString("bzdm");
 		}
 		return Currency;
+	}
+
+	private void WriteBack(String t, String requestID, String dt1id, String EQUIPMENT_NO, String ASSET_NO) {
+		RecordSet recordSet = new RecordSet();
+		String sql = "select id from " + t + " where requestid=" + requestID;
+		recordSet.executeSql(sql);
+		recordSet.next();
+		String mainid = recordSet.getString("id");
+
+		sql = "update " + t + "_dt1 set sbbh='" + EQUIPMENT_NO + "',zcbh='" + ASSET_NO + "' where mainid=" + mainid + " and id=" + dt1id;
+		log("----<GDZCCGAction>" + sql);
+		recordSet.executeSql(sql);
 	}
 }

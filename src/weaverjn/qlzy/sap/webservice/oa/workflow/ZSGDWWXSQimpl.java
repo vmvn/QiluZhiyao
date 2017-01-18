@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
     @Override
-    public void createWorkflow(ZGSDWWXSQparameters parameters) {
+    public ZGSDWWXSQresponse createWorkflow(ZGSDWWXSQparameters parameters) {
         log("----<ZSGDWWXSQimpl>" + new Date());
         ZGSDWWXSQparameter[] p = parameters.getZGSDWWXSQparameters();
         workflowBaseInfo w = parameters.getWorkflowBaseInfo();
@@ -52,7 +52,7 @@ public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
         new ZSGDWWXSQsendStatus().sendStatus(a);
         ZGSDWWXSQresponse responseInfo = new ZGSDWWXSQresponse();
         responseInfo.setResponseInfo(a);
-//        return responseInfo;
+        return responseInfo;
     }
 
     private String doCreateWorkflow(ArrayList<ZGSDWWXSQparameter> a, workflowBaseInfo w) {
