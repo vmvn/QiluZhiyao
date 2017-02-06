@@ -90,6 +90,7 @@ public class Equipment2OABrowser extends BaseBean {
         httpHeaderParm.put("repairType", "RP");
         String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
         datas = parseData(response);
+        datas = datas.replaceAll("&", "&amp;");
 //        log(datas);
         return datas;
     }
