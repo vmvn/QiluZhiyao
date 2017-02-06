@@ -78,7 +78,7 @@ public class GDZCCGAction extends BaseBean implements Action {
 				KOSTL = Util.null2String(rs.getString("cbzxsap")); //成本中心
 				QUANTITY = Util.null2String(rs.getString("sl")); //数量
 				DELIVERY_DATE = Util.null2String(rs.getString("yqgjrq")); //要求购进日期
-				PREIS = Util.null2String(rs.getString("ybzje")); //单价-oa本币总金额
+				PREIS = Util.null2String(rs.getString("ybzjey")); //单价-oa本币总金额
 				WAERS = getCurrency(Util.null2String(rs.getString("bzllan"))); //币种
 
 				paramstr = paramstr +
