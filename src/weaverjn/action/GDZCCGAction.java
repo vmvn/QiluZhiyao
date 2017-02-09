@@ -81,6 +81,9 @@ public class GDZCCGAction extends BaseBean implements Action {
 				PREIS = Util.null2String(rs.getString("ybzjey")); //单价-oa本币总金额
 				WAERS = getCurrency(Util.null2String(rs.getString("bzllan"))); //币种
 
+				String TPLNR = Util.null2String(rs.getString("gnwz"));
+				String ABCKZ = getSelectName("25329", Util.null2String(rs.getString("sfgmpsb")));
+
 				paramstr = paramstr +
 						"<OAAsset_Req>" +
 						"<OAREQ_NO>" + OAREQ_NO + "</OAREQ_NO>" +
@@ -97,6 +100,8 @@ public class GDZCCGAction extends BaseBean implements Action {
 						"<PREIS>" + PREIS + "</PREIS>" +
 						"<WAERS>" + WAERS + "</WAERS>" +
 						"<REQUISITIONER>" + REQUISITIONER + "</REQUISITIONER>" +
+						"<TPLNR>" + TPLNR + "</TPLNR>" +
+						"<ABCKZ>" + ABCKZ + "</ABCKZ>" +
 						"<NOTES></NOTES>" +
 						"<AddiInfo>" +
 						"<Additional1></Additional1>" +
