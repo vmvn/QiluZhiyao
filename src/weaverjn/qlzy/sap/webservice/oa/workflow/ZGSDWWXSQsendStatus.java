@@ -10,7 +10,7 @@ import java.util.HashMap;
 /**
  * Created by zhaiyaqi on 2016/12/23.
  */
-public class ZSGDWWXSQsendStatus extends BaseBean {
+public class ZGSDWWXSQsendStatus extends BaseBean {
     public void sendStatus(ZGSDWWXSQrequestid[] a) {
         String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                 "   <soapenv:Header/>\n" +
@@ -39,13 +39,13 @@ public class ZSGDWWXSQsendStatus extends BaseBean {
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
 
-        log("----<ZSGDWWXSQsendStatus>" + request);
+        log("----<ZGSDWWXSQsendStatus>" + request);
         HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
         String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_ServiceReq_Ret_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
         httpHeaderParm.put("instId", "10062");
         httpHeaderParm.put("repairType", "RP");
         String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
-        log("----<ZSGDWWXSQsendStatus>" + response);
+        log("----<ZGSDWWXSQsendStatus>" + response);
     }
 
     private String getMSG_TYPE(String requestID) {

@@ -18,10 +18,10 @@ import java.util.Map;
 /**
  * Created by zhaiyaqi on 2016/12/15.
  */
-public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
+public class ZGSDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
     @Override
     public ZGSDWWXSQresponse createWorkflow(ZGSDWWXSQparameters parameters) {
-        log("----<ZSGDWWXSQimpl>" + new Date());
+        log("----<ZGSDWWXSQimpl>" + new Date());
         ZGSDWWXSQparameter[] p = parameters.getZGSDWWXSQparameters();
         workflowBaseInfo w = parameters.getWorkflowBaseInfo();
         Map<String, ArrayList<ZGSDWWXSQparameter>> m = new HashMap<String, ArrayList<ZGSDWWXSQparameter>>();
@@ -49,7 +49,7 @@ public class ZSGDWWXSQimpl extends BaseBean implements ZGSDWWXSQ {
         for (int i = 0; i < requestids.size(); i++) {
             a[i] = requestids.get(i);
         }
-        new ZSGDWWXSQsendStatus().sendStatus(a);
+        new ZGSDWWXSQsendStatus().sendStatus(a);
         ZGSDWWXSQresponse responseInfo = new ZGSDWWXSQresponse();
         responseInfo.setResponseInfo(a);
         return responseInfo;
