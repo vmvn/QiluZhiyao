@@ -189,25 +189,25 @@ public class I0043Action extends BaseBean implements Action {
     public void setRequestid(String requestid) {
         this.requestid = requestid;
     }
-}
 
-class RET_MSG {
-    private String MSG_TYPE;
-    private String MESSAGE;
+    class RET_MSG {
+        private String MSG_TYPE;
+        private String MESSAGE;
 
-    public String getMSG_TYPE() {
-        return MSG_TYPE;
-    }
+        public String getMSG_TYPE() {
+            return MSG_TYPE;
+        }
 
-    public void setMSG_TYPE(String MSG_TYPE) {
-        this.MSG_TYPE = MSG_TYPE;
-    }
+        public void setMSG_TYPE(String MSG_TYPE) {
+            this.MSG_TYPE = MSG_TYPE;
+        }
 
-    public String getMESSAGE() {
-        return MESSAGE;
-    }
+        public String getMESSAGE() {
+            return MESSAGE;
+        }
 
-    public void setMESSAGE(String MESSAGE) {
-        this.MESSAGE = MESSAGE;
+        public void setMESSAGE(String MESSAGE) {
+            this.MESSAGE = MESSAGE;
+        }
     }
 }
