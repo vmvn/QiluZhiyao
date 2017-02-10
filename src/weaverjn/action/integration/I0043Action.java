@@ -20,6 +20,7 @@ import java.util.HashMap;
 public class I0043Action extends BaseBean implements Action {
     private String REQ_TYPE;
     private String company;
+    private String requestid;
     @Override
     public String execute(RequestInfo requestInfo) {
         log("run");
@@ -30,6 +31,7 @@ public class I0043Action extends BaseBean implements Action {
         if (!src.equals("reject")) {
             String wfid = requestInfo.getWorkflowid();
             String reqid = requestInfo.getRequestid();
+            this.setRequestid(reqid);
             RecordSet recordSet = new RecordSet();
             String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + wfid;
             recordSet.executeSql(sql);
@@ -101,7 +103,7 @@ public class I0043Action extends BaseBean implements Action {
                     "            <NTGEW>" + Util.null2String(recordSet.getString("jhy_jz")) + "</NTGEW>\n" +
                     "            <BRGEWMARA>" + Util.null2String(recordSet.getString("jhy_mz")) + "</BRGEWMARA>\n" +
                     "            <LOEKZMDMA>" + (this.getREQ_TYPE().equals("2") ? Util.null2String(recordSet.getString("jhy_scbj")) : "") + "</LOEKZMDMA>\n" +
-                    "            <NOTEINTCM></NOTEINTCM>\n" +
+                    "            <NOTEINTCM>" + this.getRequestid() + "</NOTEINTCM>\n" +
                     "            <!--1 or more repetitions:-->\n" +
                     "            <MAKT_LIST>\n" +
                     "               <MAKTX>" + Util.null2String(recordSet.getString("jhy_wlms")) + "</MAKTX>\n" +
@@ -178,6 +180,14 @@ public class I0043Action extends BaseBean implements Action {
 
     public void setCompany(String company) {
         this.company = company;
+    }
+
+    public String getRequestid() {
+        return requestid;
+    }
+
+    public void setRequestid(String requestid) {
+        this.requestid = requestid;
     }
 }
 
