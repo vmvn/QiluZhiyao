@@ -19,10 +19,35 @@ import java.util.Iterator;
  * Created by zhaiyaqi on 2016/12/27.
  */
 public class Fun_Location2OABrowser extends BaseBean {
-    public String run(String TPLNR, String PLTXT) {
-        return getDatas(TPLNR, PLTXT);
+    public String run(String TPLNR, String PLTXT, String company) {
+        String datas = "";
+        String WERKS = "";
+        if (company.equals("63") || company.equals("1") || company.equals("82")) {
+            WERKS = "1010";
+            datas = getDatas(TPLNR, PLTXT, WERKS);
+        } else if (company.equals("62")) {
+            WERKS = "1030";
+            datas = getDatas(TPLNR, PLTXT, WERKS);
+        } else if (company.equals("143")) {
+            WERKS = "1060";
+            datas = getDatas(TPLNR, PLTXT, WERKS);
+        } else if (company.equals("121")) {
+            WERKS = "1070";
+            datas = getDatas(TPLNR, PLTXT, WERKS);
+        } else if (company.equals("142")) {
+            WERKS = "1630";
+            datas = getDatas(TPLNR, PLTXT, WERKS);
+        } else if (company.equals("61")) {
+            WERKS = "1610";
+            String s1 = getDatas(TPLNR, PLTXT, WERKS);
+            WERKS = "1620";
+            String s2 = getDatas(TPLNR, PLTXT, WERKS);
+            datas = s1.replace("</list>", "") + s2.replace("<list>", "");
+        }
+        return datas;
     }
-    private String getDatas(String TPLNR, String PLTXT) {
+
+    private String getDatas(String TPLNR, String PLTXT, String WERKS) {
         String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
@@ -37,6 +62,7 @@ public class Fun_Location2OABrowser extends BaseBean {
                 "         <SerachInfo>\n" +
                 "            <TPLNR>" + TPLNR + "</TPLNR>\n" +
                 "            <PLTXT>" + PLTXT + "</PLTXT>\n" +
+                "            <WERKS>" + WERKS + "</WERKS>\n\n" +
                 "         </SerachInfo>\n" +
                 "      </erp:MT_Fun_Location_Req>\n" +
                 "   </soapenv:Body>\n" +
@@ -67,6 +93,7 @@ public class Fun_Location2OABrowser extends BaseBean {
                 s.append("<bean>");
                 s.append("<TPLNR>").append(e.elementText("TPLNR")).append("</TPLNR>");
                 s.append("<PLTXT>").append(e.elementText("PLTXT")).append("</PLTXT>");
+                s.append("<WERKS>").append(e.elementText("WERKS")).append("</WERKS>");
                 s.append("</bean>");
                 sqls.add(getsql(e.elementText("TPLNR"), e.elementText("PLTXT")));
             }
@@ -129,6 +156,6 @@ public class Fun_Location2OABrowser extends BaseBean {
 
     public static void main(String[] args) {
         Fun_Location2OABrowser t = new Fun_Location2OABrowser();
-        System.out.println(t.run("", "*"));
+        System.out.println(t.run("", "*", "63"));
     }
 }
