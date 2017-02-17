@@ -22,7 +22,7 @@ public class Equipment2OABrowser extends BaseBean {
     private String c;
 
     public String run(String EQUNR, String company, String EQKTX, String HERST, String TYPBZ, String KOSTL, String TIDNR) {
-        setC(company);
+//        setC(company);
         String datas = "";
         String WERKS = "";
         if (EQUNR.isEmpty()) {
@@ -43,22 +43,28 @@ public class Equipment2OABrowser extends BaseBean {
         if (TIDNR.isEmpty()) {
             TIDNR = "*";
         }
-        if(company.equals("63")||company.equals("1")||company.equals("82")){
+        if(company.equals("63")||company.equals("1")||company.equals("81")||company.equals("82")){
             WERKS = "1010";
+            setC(WERKS);
             datas = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
         }else if(company.equals("62")){
             WERKS = "1030";
+            setC(WERKS);
             datas = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
         }else if(company.equals("143")){
             WERKS = "1060";
+            setC(WERKS);
             datas = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
         }else if(company.equals("121")){
             WERKS = "1070";
+            setC(WERKS);
             datas = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
         }else if(company.equals("142")){
             WERKS = "1630";
+            setC(WERKS);
             datas = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
         } else if (company.equals("61")) {
+            setC(company);
             WERKS = "1610";
             String s1 = getDatas(EQUNR, WERKS, EQKTX, HERST, TYPBZ, KOSTL, TIDNR);
             WERKS = "1620";

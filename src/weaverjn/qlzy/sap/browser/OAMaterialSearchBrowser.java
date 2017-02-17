@@ -24,7 +24,7 @@ public class OAMaterialSearchBrowser extends BaseBean {
         setCom(company);
         String datas = "";
         String WERKS;
-        if(company.equals("63")||company.equals("1")||company.equals("82")){
+        if(company.equals("63")||company.equals("1")||company.equals("81")||company.equals("82")){
             WERKS = "1010";
             datas = getDatas(Company_Code, MATNR, MAKTX, WERKS, MATKL);
         }else if(company.equals("62")){

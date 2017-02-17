@@ -24,7 +24,7 @@ public class KOSTL2OABrowser extends BaseBean {
         setCom(company);
         String datas = "";
         String BUKRS = "";
-        if(company.equals("63")||company.equals("1")||company.equals("82")){
+        if(company.equals("63")||company.equals("1")||company.equals("81")||company.equals("82")){
             BUKRS = "1010";
             datas = getDatas(Company_Code, KOSTL, KTEXT, BUKRS);
         }else if(company.equals("62")){

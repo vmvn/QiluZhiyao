@@ -22,7 +22,7 @@ public class Fun_Location2OABrowser extends BaseBean {
     public String run(String TPLNR, String PLTXT, String company) {
         String datas = "";
         String WERKS = "";
-        if (company.equals("63") || company.equals("1") || company.equals("82")) {
+        if (company.equals("63") || company.equals("1") || company.equals("81")|| company.equals("82")) {
             WERKS = "1010";
             datas = getDatas(TPLNR, PLTXT, WERKS);
         } else if (company.equals("62")) {
