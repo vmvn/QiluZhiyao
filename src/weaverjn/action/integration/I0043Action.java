@@ -53,6 +53,7 @@ public class I0043Action extends BaseBean implements Action {
                         "      </erp:MT_MAT_MDG_LIST>\n" +
                         "   </soapenv:Body>\n" +
                         "</soapenv:Envelope>";
+                log(request);
                 HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
                 String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Material_Mdg_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
                 httpHeaderParm.put("instId", "10062");
@@ -132,19 +133,24 @@ public class I0043Action extends BaseBean implements Action {
 
     private String getDescription(String company) {
         String code = "";
-        if(company.equals("63")||company.equals("1")||company.equals("82")){
+        if(company.equals("63")||company.equals("1")||company.equals("82")||company.equals("81")){
             code = "1010";
+            code += "总厂";
         }else if(company.equals("62")){
             code = "1030";
+            code += "安替";
         }else if(company.equals("143")){
             code = "1060";
         }else if(company.equals("121")){
             code = "1070";
+            code += "黄河";
         }else if(company.equals("142")){
             code = "1630";
         } else if (company.equals("61")) {
             code = "1610";
             code = "1620";
+        }else{
+
         }
         return "OA" + code;
     }
