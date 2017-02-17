@@ -30,7 +30,7 @@ public class GuardAction extends BaseBean implements Action {
             requestInfo.getRequestManager().setMessageid("Message");
             requestInfo.getRequestManager().setMessagecontent("审批状态尚未回写，不能提交！");
         }
-        return null;
+        return SUCCESS;
     }
 
     private void log(Object o) {
