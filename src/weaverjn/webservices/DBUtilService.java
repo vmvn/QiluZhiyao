@@ -5,4 +5,6 @@ package weaverjn.webservices;
  */
 public interface DBUtilService {
     boolean executeSql(String sql);
+
+    String getWfShareSql(int userid);
 }
