@@ -92,7 +92,7 @@ public class I0051Action extends BaseBean implements Action {
                 "            <F_FLGDEFT>" + Util.null2String(recordSet.getString("czhm")) + "</F_FLGDEFT>\n" +
                 "            <FLGMOB>" + Util.null2String(recordSet.getString("czhm")) + "</FLGMOB>\n" +
                 "            <E_ADDERSS>" + Util.null2String(recordSet.getString("dzyxdz")) + "</E_ADDERSS>\n" +
-                "            <REMARK></REMARK>\n" +
+                "            <REMARK>" + requestid + "</REMARK>\n" +
                 "            <NATPERS>" + Util.null2String(recordSet.getString("fr")) + "</NATPERS>\n" +
                 "            <CONTACT>" + Util.null2String(recordSet.getString("lxr")) + "</CONTACT>\n" +
                 "            <TAXNUMXL>" + Util.null2String(recordSet.getString("nsrdjh")) + "</TAXNUMXL>\n" +
