@@ -52,7 +52,7 @@ public class DemanPlanAction extends BaseBean implements Action {
                 "   <soapenv:Body>\n" +
                 "      <erp:MT_DemanPlan>\n" +
                 "         <control_info>\n" +
-                "            <INTF_ID></INTF_ID>\n" +
+                "            <INTF_ID>I0055</INTF_ID>\n" +
                 "            <Src_System></Src_System>\n" +
                 "            <Dest_System></Dest_System>\n" +
                 "            <Company_Code></Company_Code>\n" +
@@ -74,21 +74,26 @@ public class DemanPlanAction extends BaseBean implements Action {
         String sql = "update " + table + " set " +
                 "ydlx='" + Move_Type(ret.getMOVE_TYPE()) + "', " +
                 "cbzx='" + ret.getKOSTL() + "', " +
+                "gc='" + ret.getWERKS() + "', " +
+                "dfgc='" + ret.getUMWRK() + "', " +
+                "dfkcd='" + ret.getUMLGO() + "', " +
                 "nbdd='" + ret.getAUFNR() + "' " +
                 "where requestid" + requestid;
         recordSet.executeSql(sql);
 
         ArrayList<Deman_List> lists = ret.getDeman_Lists();
         for (Deman_List list : lists) {
-            sql = "insert " + table + "_dt1(hxmh,wlbh,wlmsmc,gc,fckcd,ggxh,lysl,jldw,bz) values(" +
+            sql = "insert " + table + "_dt1(hxmh,wlbh,wlmsmc,gc,fckcd,ggxh,lysl,jldw,account,kcph,bz) values(" +
                     "'" + list.getZLNNBR() + "', " +
                     "'" + list.getMATNR() + "', " +
                     "'" + list.getMAKTX() + "', " +
                     "'" + list.getWERKS() + "', " +
-                    "'" + ret.getUMLGO() + "', " +
+                    "'" + list.getLGORT() + "', " +
                     "'" + "" + "', " +
                     "'" + list.getMENGE() + "', " +
                     "'" + list.getMEINS() + "', " +
+                    "'" + list.getACCOUNT() + "', " +
+                    "'" + list.getCHARG() + "', " +
                     "'" + "" + "' " +
                     ")";
             recordSet.executeSql(sql);
