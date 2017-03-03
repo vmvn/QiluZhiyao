@@ -1,9 +1,13 @@
 package weaverjn.action.integration;
 
+import weaver.conn.RecordSet;
+import weaver.general.BaseBean;
+import weaver.general.Util;
+
 /**
  * Created by zhaiyaqi on 2017/2/14.
  */
-public class utils {
+public class utils extends BaseBean{
     public static String[] slice(String s, int range, int n) {
         String[] arr = new String[n];
         int len = s.length();
@@ -20,6 +24,30 @@ public class utils {
             }
         }
         return arr;
+    }
+
+    public static String getTableName(String workflowid) {
+        RecordSet recordSet = new RecordSet();
+        String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + workflowid;
+
+        recordSet.executeSql(sql);
+        recordSet.next();
+        return Util.null2String(recordSet.getString("tablename"));
+    }
+
+    public static String getFieldValue(String table, String field, String conditionValue) {
+        return getFieldValue(table, field, "id", conditionValue);
+    }
+
+    public static String getFieldValue(String table, String field, String conditionField, String conditionValue) {
+        RecordSet recordSet = new RecordSet();
+        String sql = "select " + field + " from " + table + " where " + conditionField + "='" + conditionValue + "'";
+        recordSet.executeSql(sql);
+        String value = "";
+        if (recordSet.next()) {
+            value = recordSet.getString(field);
+        }
+        return value;
     }
 
     public static void main(String[] args) {
