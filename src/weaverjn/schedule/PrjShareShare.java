@@ -26,7 +26,7 @@ public class PrjShareShare extends BaseCronJob {
                 sql = "select * from Prj_ShareInfo where relateditemid=" + id + " and userid=" + userId + " and sharelevel=1";
                 rs3.executeSql(sql);
                 if (rs3.next()) {
-                    System.out.println("---->" + userId + ":" + id + ":look");
+//                    System.out.println("---->" + userId + ":" + id + ":look");
                 } else {
                     String ProcPara = "";
                     char flag = 2;
