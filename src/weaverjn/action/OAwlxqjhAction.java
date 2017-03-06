@@ -20,77 +20,86 @@ import java.util.HashMap;
  * Created by zhaiyaqi on 2016/11/19.
  */
 public class OAwlxqjhAction extends BaseBean implements Action {
+    private String company;
+    private String department;
     public String execute(RequestInfo requestInfo) {
         log("---->OAwlxqjhAction run");
         RequestManager requestManager = requestInfo.getRequestManager();
         String src = requestManager.getSrc();
         String[] ret_messages = new String[3];
         if (!src.equals("reject")) {
-            String wfid = requestInfo.getWorkflowid();
-            String requestid = requestInfo.getRequestid();
-            RecordSet recordSet = new RecordSet();
-            String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + wfid;
-            recordSet.executeSql(sql);
-            recordSet.next();
-            String t = recordSet.getString("tablename");
-            sql = "select * from " + t + " where requestid=" + requestid;
-            recordSet.executeSql(sql);
-            if (recordSet.next()) {
-                int id = recordSet.getInt("id");
-                String DEMANDPLAN_NO = requestid;
-                String MOVE_TYPE = getMVTYPE(Util.null2String(recordSet.getString("ydlx")));
-                String DEPARTMENT = getDepartmentName(recordSet.getInt("sqbm"));
-                String REQUISITOR = getLastName(recordSet.getInt("sqr"));
-                String WERKS = getCompanyCode(Util.null2String(recordSet.getString("gcbm")));
-                String KOSTL = Util.null2String(recordSet.getString("xqbm"));
-                String UMLGO = Util.null2String(recordSet.getString("jskcd1"));
-                String AUFNR = Util.null2String(recordSet.getString("nbdd1"));
-                String sqr = Util.null2String(recordSet.getString("sqr"));
-
-                String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\" xmlns:gdt=\"http://sap.com/xi/SAPGlobal/GDT\">\n" +
-                        "   <soapenv:Header/>\n" +
-                        "   <soapenv:Body>\n" +
-                        "      <erp:MT_DemandPlan>\n" +
-                        "         <ControlInfo>\n" +
-                        "            <INTF_ID>I0032</INTF_ID>\n" +
-                        "            <Src_System>OA</Src_System>\n" +
-                        "            <Dest_System>SAPERP</Dest_System>\n" +
-                        "            <Company_Code></Company_Code>\n" +
-                        "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
-                        "         </ControlInfo>\n" +
-                        "         <DEMANDPLAN_NO>" + DEMANDPLAN_NO + "</DEMANDPLAN_NO>\n" +
-                        "         <MV_TYPE>" + MOVE_TYPE + "</MV_TYPE>\n" +
-                        "         <GRUND></GRUND>\n" +
-                        "         <DEPARTMENT>" + DEPARTMENT + "</DEPARTMENT>\n" +
-                        "         <REQUISITOR>" + REQUISITOR + "</REQUISITOR>\n" +
-                        "         <WERKS>" + WERKS + "</WERKS>\n" +
-                        "         <KOSTL>" + KOSTL + "</KOSTL>\n" +
-                        "         <AUFNR>" + AUFNR + "</AUFNR>\n" +
-                        "         <ACCOUNT></ACCOUNT>\n" +
-                        "         <UMWRK></UMWRK>\n" +
-                        "         <UMLGO>" + UMLGO + "</UMLGO>\n" +
-                        "         <!--1 or more repetitions:-->\n" +
-                        getDetails(id, t, sqr) +
-                        "      </erp:MT_DemandPlan>\n" +
-                        "   </soapenv:Body>\n" +
-                        "</soapenv:Envelope>";
-                log(request);
-                HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-                String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_DemandPlan_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-                httpHeaderParm.put("instId", "10062");
-                httpHeaderParm.put("repairType", "RP");
-                String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
-                log("---->" + response);
-                ret_messages = getRet_Messages(response);
-            }
-            if ("E".equals(ret_messages[0]) || "W".equals(ret_messages[0])) {
-                requestInfo.getRequestManager().setMessageid("Returned Message");
-                requestInfo.getRequestManager().setMessagecontent(ret_messages[1]);
-                return FAILURE_AND_CONTINUE;
+            if ((this.getCompany() == null || "".equals(this.getCompany())) && (this.getDepartment() == null || "".equals(this.getDepartment()))) {
+                requestInfo.getRequestManager().setMessageid("Info");
+                requestInfo.getRequestManager().setMessagecontent("请配置Action 参数");
             } else {
-                sql = "update " + t + " set ylh='" + ret_messages[2] + "' where requestid=" + requestid;
+                log("<wlxqjh><company>" + this.getCompany());
+                log("<wlxqjh><department>" + this.getDepartment());
+                String wfid = requestInfo.getWorkflowid();
+                String requestid = requestInfo.getRequestid();
+                RecordSet recordSet = new RecordSet();
+                String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + wfid;
                 recordSet.executeSql(sql);
-                log("----<>" + sql);
+                recordSet.next();
+                String t = recordSet.getString("tablename");
+                sql = "select * from " + t + " where requestid=" + requestid;
+                recordSet.executeSql(sql);
+                if (recordSet.next()) {
+                    int id = recordSet.getInt("id");
+                    String DEMANDPLAN_NO = requestid;
+                    String MOVE_TYPE = getMVTYPE(Util.null2String(recordSet.getString("ydlx")));
+                    String DEPARTMENT = getDepartmentName(recordSet.getInt("sqbm"));
+                    String REQUISITOR = getLastName(recordSet.getInt("sqr"));
+                    String WERKS = getCompanyCode(Util.null2String(recordSet.getString("gcbm")));
+                    String KOSTL = Util.null2String(recordSet.getString("xqbm"));
+                    String UMLGO = Util.null2String(recordSet.getString("jskcd1"));
+                    String AUFNR = Util.null2String(recordSet.getString("nbdd1"));
+                    String sqr = Util.null2String(recordSet.getString("sqr"));
+
+                    String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\" xmlns:gdt=\"http://sap.com/xi/SAPGlobal/GDT\">\n" +
+                            "   <soapenv:Header/>\n" +
+                            "   <soapenv:Body>\n" +
+                            "      <erp:MT_DemandPlan>\n" +
+                            "         <ControlInfo>\n" +
+                            "            <INTF_ID>I0032</INTF_ID>\n" +
+                            "            <Src_System>OA</Src_System>\n" +
+                            "            <Dest_System>SAPERP</Dest_System>\n" +
+                            "            <Company_Code></Company_Code>\n" +
+                            "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
+                            "         </ControlInfo>\n" +
+                            "         <DEMANDPLAN_NO>" + DEMANDPLAN_NO + "</DEMANDPLAN_NO>\n" +
+                            "         <MV_TYPE>" + MOVE_TYPE + "</MV_TYPE>\n" +
+                            "         <GRUND></GRUND>\n" +
+                            "         <DEPARTMENT>" + DEPARTMENT + "</DEPARTMENT>\n" +
+                            "         <REQUISITOR>" + REQUISITOR + "</REQUISITOR>\n" +
+                            "         <WERKS>" + WERKS + "</WERKS>\n" +
+                            "         <KOSTL>" + KOSTL + "</KOSTL>\n" +
+                            "         <AUFNR>" + AUFNR + "</AUFNR>\n" +
+                            "         <ACCOUNT></ACCOUNT>\n" +
+                            "         <UMWRK></UMWRK>\n" +
+                            "         <UMLGO>" + UMLGO + "</UMLGO>\n" +
+                            "         <!--1 or more repetitions:-->\n" +
+                            getDetails(id, t, sqr) +
+                            "      </erp:MT_DemandPlan>\n" +
+                            "   </soapenv:Body>\n" +
+                            "</soapenv:Envelope>";
+                    log(request);
+                    HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
+                    String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_DemandPlan_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
+                    httpHeaderParm.put("instId", "10062");
+                    httpHeaderParm.put("repairType", "RP");
+                    String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
+                    log("---->" + response);
+                    ret_messages = getRet_Messages(response);
+                }
+                if ("E".equals(ret_messages[0]) || "W".equals(ret_messages[0])) {
+                    requestInfo.getRequestManager().setMessageid("Returned Message");
+                    requestInfo.getRequestManager().setMessagecontent(ret_messages[1]);
+                    return FAILURE_AND_CONTINUE;
+                } else {
+                    sql = "update " + t + " set ylh='" + ret_messages[2] + "' where requestid=" + requestid;
+                    recordSet.executeSql(sql);
+                    log("----<>" + sql);
+                }
             }
         }
         return SUCCESS;
@@ -136,7 +145,7 @@ public class OAwlxqjhAction extends BaseBean implements Action {
             i++;
             v += "         <Lines>\n" +
                     "            <ZLNNBR>" + i + "</ZLNNBR>\n" +
-                    "            <MATNR>" + Util.null2String(recordSet.getString("wlbhsap")) + "</MATNR>\n" +
+                    "            <MATNR>" + Util.null2String(recordSet.getString("wlbh1")) + "</MATNR>\n" +
                     "            <MAKTX>" + slice(Util.null2String(recordSet.getString("wlmsmc")), 40) + "</MAKTX>\n" +
                     "            <MENGE>" + Util.null2String(recordSet.getString("xqsl")) + "</MENGE>\n" +
                     "            <MEINS>" + Util.null2String(recordSet.getString("jldw")) + "</MEINS>\n" +
@@ -207,10 +216,53 @@ public class OAwlxqjhAction extends BaseBean implements Action {
 
     private String X(String sqr, String bz) {
         RecordSet recordSet = new RecordSet();
-        String sql = "select subcompanyid1 from hrmresource where id=" + sqr;
+        String sql = "select subcompanyid1,departmentid from hrmresource where id=" + sqr;
         recordSet.executeSql(sql);
         recordSet.next();
-        int n = recordSet.getInt("subcompanyid1");
-        return n == 82 && !bz.isEmpty() ? "X" : "";
+        int company = recordSet.getInt("subcompanyid1");
+        int department = recordSet.getInt("departmentid");
+        return (containsCompany(String.valueOf(company)) || containsDepartment(String.valueOf(department))) && !bz.isEmpty() ? "X" : "";
+    }
+
+    private boolean containsCompany(String subcomid) {
+        if (this.getCompany() == null) {
+            this.setCompany("");
+        }
+        String[] arr = this.getCompany().split(",");
+        for (String s : arr) {
+            if (s.equals(subcomid)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean containsDepartment(String department) {
+        if (this.getDepartment() == null) {
+            this.setDepartment("");
+        }
+        String[] arr = this.getDepartment().split(",");
+        for (String s : arr) {
+            if (s.equals(department)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }
