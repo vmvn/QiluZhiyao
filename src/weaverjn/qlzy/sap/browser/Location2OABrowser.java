@@ -6,6 +6,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import weaver.general.BaseBean;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -59,7 +60,7 @@ public class Location2OABrowser extends BaseBean {
                 "         <ControlInfo>\n" +
                 "            <INTF_ID>I0035</INTF_ID>\n" +
                 "            <Src_System>OA</Src_System>\n" +
-                "            <Dest_System>SAPERP</Dest_System>\n" +
+                "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
                 "            <Company_Code>" + Company_Code + "</Company_Code>\n" +
                 "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
                 "         </ControlInfo>\n" +
