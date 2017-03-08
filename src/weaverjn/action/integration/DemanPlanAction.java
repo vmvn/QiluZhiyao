@@ -36,8 +36,9 @@ public class DemanPlanAction extends BaseBean implements Action {
         String sapylh = Util.null2String(recordSet.getString("sapylh"));
 
         String response = send(sapylh);
+        writeLog(response);
         MT_DemanPlan_Ret ret = parseHttpResponse(response);
-        if (!ret.getMsg_type().equals("S") || !ret.getMessage().contains("成功")) {
+        if (!ret.getMsg_type().equals("S") && !ret.getMessage().contains("成功")) {
             requestInfo.getRequestManager().setMessageid("Message");
             requestInfo.getRequestManager().setMessagecontent(ret.getMessage());
         } else {
@@ -62,6 +63,7 @@ public class DemanPlanAction extends BaseBean implements Action {
                 "      </erp:MT_DemanPlan>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
+        writeLog(request);
         HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
         String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Deman_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
         httpHeaderParm.put("instId", "10062");
@@ -78,12 +80,19 @@ public class DemanPlanAction extends BaseBean implements Action {
                 "dfgc='" + ret.getUMWRK() + "', " +
                 "dfkcd='" + ret.getUMLGO() + "', " +
                 "nbdd='" + ret.getAUFNR() + "' " +
-                "where requestid" + requestid;
+                "where requestid=" + requestid;
+        writeLog(sql);
         recordSet.executeSql(sql);
+
+        sql = "select id from " + table + " where requestid=" + requestid;
+        recordSet.executeSql(sql);
+        recordSet.next();
+        String mainid = recordSet.getString("id");
 
         ArrayList<Deman_List> lists = ret.getDeman_Lists();
         for (Deman_List list : lists) {
-            sql = "insert " + table + "_dt1(hxmh,wlbh,wlmsmc,gc,fckcd,ggxh,lysl,jldw,account,kcph,bz) values(" +
+            sql = "insert into " + table + "_dt1(mainid,hxmh,wlbh,wlmsmc,gc,fckcd,ggxh,lysl,jldw,account,kcph,bz) values(" +
+                    "'" + mainid + "', " +
                     "'" + list.getZLNNBR() + "', " +
                     "'" + list.getMATNR() + "', " +
                     "'" + list.getMAKTX() + "', " +
@@ -96,6 +105,7 @@ public class DemanPlanAction extends BaseBean implements Action {
                     "'" + list.getCHARG() + "', " +
                     "'" + "" + "' " +
                     ")";
+            writeLog(sql);
             recordSet.executeSql(sql);
         }
     }
