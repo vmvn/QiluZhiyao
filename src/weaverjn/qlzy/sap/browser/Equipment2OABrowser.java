@@ -6,6 +6,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import weaver.general.BaseBean;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -80,6 +81,13 @@ public class Equipment2OABrowser extends BaseBean {
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
                 "      <erp:MT_Equi_Par>\n" +
+                "         <ControlInfo>\n" +
+                "            <INTF_ID>I0030</INTF_ID>\n" +
+                "            <Src_System>OA</Src_System>\n" +
+                "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
+                "            <Company_Code></Company_Code>\n" +
+                "            <Send_Time></Send_Time>\n" +
+                "         </ControlInfo>\n" +
                 "         <EQUNR>" + EQUNR + "</EQUNR>\n" +
                 "         <WERKS>" + WERKS + "</WERKS>\n" +
                 "         <EQKTX>" + EQKTX + "</EQKTX>\n" +
@@ -90,6 +98,7 @@ public class Equipment2OABrowser extends BaseBean {
                 "      </erp:MT_Equi_Par>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
+        log(request);
         HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
         String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Equi2OA_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
         httpHeaderParm.put("instId", "10062");

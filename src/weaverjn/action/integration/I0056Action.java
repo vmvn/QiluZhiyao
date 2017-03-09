@@ -58,15 +58,18 @@ public class I0056Action extends BaseBean implements Action {
                     "      </erp:MT_Picking_List>\n" +
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
+            writeLog(soapHttpRequest);
             HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
             String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Picking_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
             httpHeaderParm.put("instId", "10062");
             httpHeaderParm.put("repairType", "RP");
             String soapHttpResponse = WSClientUtils.callWebServiceWithHttpHeaderParm(soapHttpRequest, url, httpHeaderParm);
+            writeLog(soapHttpResponse);
             MT_Picking_Ret ret = parse(soapHttpResponse);
             if (ret != null) {
                 if (ret.getMSG_TYPE().equals("S")) {
                     sql = "update " + tablename + " set ylh='" + ret.getISSUE_NO_NEW() + "' where requestid=" + requestid;
+                    writeLog(sql);
                     recordSet.executeSql(sql);
                 } else {
                     requestInfo.getRequestManager().setMessageid("Message");

@@ -599,6 +599,7 @@ public class BaseBrowser extends BaseBean implements Browser {
 	{
 		List dataList = new ArrayList();
 		String newcustomhref = this.replaceDefaultValue(userid, customhref);
+		newcustomhref = newcustomhref.replace("192.168.1.108", "192.168.136.81");
 		String result = BrowserIOServlet.sendGet(newcustomhref, "");
 		result = URLDecoder.decode(result);
 		writeLog("newcustomhref:" + newcustomhref);

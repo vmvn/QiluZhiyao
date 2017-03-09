@@ -11,6 +11,7 @@ import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,7 +48,7 @@ public class OAsbdbsqAction extends BaseBean implements Action {
                         "         <ControlInfo>\n" +
                         "            <INTF_ID>I0011</INTF_ID>\n" +
                         "            <Src_System>OA</Src_System>\n" +
-                        "            <Dest_System>SAPERP</Dest_System>\n" +
+                        "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
                         "            <Company_Code>" + gcbm + "</Company_Code>\n" +
                         "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
                         "         </ControlInfo>\n" +

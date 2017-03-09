@@ -9,6 +9,7 @@ import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -118,7 +119,7 @@ public class GDZCCGAction extends BaseBean implements Action {
 						"<ControlInfo>" +
 						"<INTF_ID>I0008</INTF_ID>" +
 						"<Src_System>OA</Src_System>" +
-						"<Dest_System>SAPERP</Dest_System>" +
+						"<Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>" +
 						"<Company_Code></Company_Code>" +
 						"<Send_Time>" + dateStr + "</Send_Time>" +
 						"</ControlInfo>" + paramstr +
