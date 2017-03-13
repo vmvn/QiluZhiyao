@@ -10,6 +10,7 @@ import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.util.HashMap;
 
@@ -34,8 +35,8 @@ public class MaintenanceApplicationAction extends BaseBean implements Action {
                     "      <erp:MT_Maintain_Order_Req>\n" +
                     "         <ControlInfo>\n" +
                     "            <INTF_ID></INTF_ID>\n" +
-                    "            <Src_System></Src_System>\n" +
-                    "            <Dest_System></Dest_System>\n" +
+                    "            <Src_System>OA</Src_System>\n" +
+                    "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
                     "            <Company_Code></Company_Code>\n" +
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
