@@ -17,11 +17,11 @@ public class checkA extends BaseBean implements Action {
             String tableName = utils.getTableName(requestInfo.getWorkflowid());
             String requestId = requestInfo.getRequestid();
             RecordSet recordSet = new RecordSet();
-            String sql = "select sbbh, gnwz from " + tableName + " where requestid=" + requestId;
+            String sql = "select sbbh, TPLNR from " + tableName + " where requestid=" + requestId;
             recordSet.executeSql(sql);
             recordSet.next();
             String sbbh = Util.null2String(recordSet.getString("sbbh"));
-            String gnwz = Util.null2String(recordSet.getString("gnwz"));
+            String gnwz = Util.null2String(recordSet.getString("TPLNR"));
             if (sbbh.isEmpty() && gnwz.isEmpty()) {
                 requestInfo.getRequestManager().setMessageid("Message");
                 requestInfo.getRequestManager().setMessagecontent("设备编号和功能位置不能同时为空！");
