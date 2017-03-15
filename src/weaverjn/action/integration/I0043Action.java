@@ -103,6 +103,7 @@ public class I0043Action extends BaseBean implements Action {
                     "            <WRKST>" + Util.null2String(recordSet.getString("jhy_jbwl")) + "</WRKST>\n" +
                     "            <NTGEW>" + Util.null2String(recordSet.getString("jhy_jz")) + "</NTGEW>\n" +
                     "            <BRGEWMARA>" + Util.null2String(recordSet.getString("jhy_mz")) + "</BRGEWMARA>\n" +
+                    "            <TXTQINSP>" + Util.null2String(recordSet.getString("jhy_bzgg")) + "</TXTQINSP>\n" +
                     "            <LOEKZMDMA>" + (this.getREQ_TYPE().equals("2") ? Util.null2String(recordSet.getString("jhy_scbj")) : "") + "</LOEKZMDMA>\n" +
                     "            <NOTEINTCM>" + this.getRequestid() + "," + recordSet.getString("id") + "</NOTEINTCM>\n" +
                     "            <!--1 or more repetitions:-->\n" +
