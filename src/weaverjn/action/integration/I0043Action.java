@@ -11,6 +11,7 @@ import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.util.HashMap;
 
@@ -48,6 +49,13 @@ public class I0043Action extends BaseBean implements Action {
                         "   <soapenv:Header/>\n" +
                         "   <soapenv:Body>\n" +
                         "      <erp:MT_MAT_MDG_LIST>\n" +
+                        "         <ControlInfo>\n" +
+                        "            <INTF_ID></INTF_ID>\n" +
+                        "            <Src_System>OA</Src_System>\n" +
+                        "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
+                        "            <Company_Code></Company_Code>\n" +
+                        "            <Send_Time></Send_Time>\n" +
+                        "         </ControlInfo>\n" +
                         "         <!--1 or more repetitions:-->\n" +
                         getLines(id, t) +
                         "      </erp:MT_MAT_MDG_LIST>\n" +
@@ -96,22 +104,30 @@ public class I0043Action extends BaseBean implements Action {
                     "            <GROES>" + Util.null2String(recordSet.getString("jhy_dxgl")) + "</GROES>\n" +
                     "            <EXTWG>" + Util.null2String(recordSet.getString("gxb_wbwlz")) + "</EXTWG>\n" +
                     "            <NOTEBSCDA>" + Util.null2String(recordSet.getString("jhy_jbsjwb")) + "</NOTEBSCDA>\n" +
-                    "            <TXTQINSP>" + Util.null2String(recordSet.getString("jhywlms_zlbz")) + "</TXTQINSP>\n" +//质量标准
+//                    "            <TXTQINSP>" + Util.null2String(recordSet.getString("jhywlms_zlbz")) + "</TXTQINSP>\n" +//质量标准
+                    "            <TXTQINSP>" + Util.null2String(recordSet.getString("jhy_bzgg")) + "</TXTQINSP>\n" +//质量标准
                     "            <GEWEI_MAT>" + Util.null2String(recordSet.getString("jhy_zldw")) + "</GEWEI_MAT>\n" +
                     "            <NORMT>" + Util.null2String(recordSet.getString("jhy_hybzms")) + "</NORMT>\n" +
                     "            <FERTH>" + Util.null2String(recordSet.getString("jhy_scjybwl")) + "</FERTH>\n" +
                     "            <WRKST>" + Util.null2String(recordSet.getString("jhy_jbwl")) + "</WRKST>\n" +
                     "            <NTGEW>" + Util.null2String(recordSet.getString("jhy_jz")) + "</NTGEW>\n" +
                     "            <BRGEWMARA>" + Util.null2String(recordSet.getString("jhy_mz")) + "</BRGEWMARA>\n" +
-                    "            <TXTQINSP>" + Util.null2String(recordSet.getString("jhy_bzgg")) + "</TXTQINSP>\n" +
                     "            <LOEKZMDMA>" + (this.getREQ_TYPE().equals("2") ? Util.null2String(recordSet.getString("jhy_scbj")) : "") + "</LOEKZMDMA>\n" +
                     "            <NOTEINTCM>" + this.getRequestid() + "," + recordSet.getString("id") + "</NOTEINTCM>\n" +
                     "            <!--1 or more repetitions:-->\n" +
                     "            <MAKT_LIST>\n" +
                     "               <MAKTX>" + Util.null2String(recordSet.getString("jhy_wlms")) + "</MAKTX>\n" +
-                    "               <SPRAS>" + getFieldValue("yydmbm", "uf_sapjcsj_yydm", "id", Util.null2String(recordSet.getString("jhy_yydm"))) + "</SPRAS>\n" +
-                    "            </MAKT_LIST>\n" +
-                    "         </Material_Mdg_Info>\n";
+//                    "               <SPRAS>" + getFieldValue("yydmbm", "uf_sapjcsj_yydm", "id", Util.null2String(recordSet.getString("jhy_yydm"))) + "</SPRAS>\n" +
+                    "               <SPRAS>CH</SPRAS>\n" +
+                    "            </MAKT_LIST>\n";
+            String jhy_sapbzmc = Util.null2String(recordSet.getString("jhy_sapbzmc"));
+            if (!jhy_sapbzmc.isEmpty()) {
+                lines += "            <MAKT_LIST>\n" +
+                        "               <MAKTX>" + jhy_sapbzmc + "</MAKTX>\n" +
+                        "               <SPRAS>Z4</SPRAS>\n" +
+                        "            </MAKT_LIST>\n";
+            }
+            lines += "         </Material_Mdg_Info>\n";
         }
         return lines;
     }
