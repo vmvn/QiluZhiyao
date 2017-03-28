@@ -17,12 +17,11 @@ public class WSClientUtils {
         super();
     }
 
-    public static String callWebService(String soapRequest, String serviceEpr) {
-        return callWebService(soapRequest, serviceEpr, "application/soap+xml; charset=utf-8");
+    public static String callWebService(String soapRequest, String serviceEpr, String username, String password) {
+        return callWebService(soapRequest, serviceEpr, "application/soap+xml; charset=utf-8", username, password);
     }
 
-    public static String callWebService(String soapRequest, String serviceEpr, String contentType) {
-
+    public static String callWebService(String soapRequest, String serviceEpr, String contentType, String username, String password) {
         PostMethod postMethod = new PostMethod(serviceEpr);
         //设置POST方法请求超时
         postMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 50000);
@@ -32,8 +31,8 @@ public class WSClientUtils {
             postMethod.setRequestEntity(requestEntity);
 
             HttpClient httpClient = new HttpClient();
-            //Credentials defaultcreds = new UsernamePasswordCredentials("oa0001", "123qwe!@#");
-            //httpClient.getState().setCredentials(AuthScope.ANY, defaultcreds);
+            Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
+            httpClient.getState().setCredentials(AuthScope.ANY, defaultcreds);
             HttpConnectionManagerParams managerParams = httpClient.getHttpConnectionManager().getParams();
             // 设置连接超时时间(单位毫秒)
             managerParams.setConnectionTimeout(300000);
