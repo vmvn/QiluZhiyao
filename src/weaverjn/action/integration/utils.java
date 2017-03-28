@@ -4,6 +4,9 @@ import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by zhaiyaqi on 2017/2/14.
  */
@@ -48,6 +51,16 @@ public class utils extends BaseBean{
             value = recordSet.getString(field);
         }
         return value;
+    }
+
+    public static String getCurrentDate() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return simpleDateFormat.format(new Date());
+    }
+
+
+    public static String slice(String s, int n) {
+        return s.length() > n ? s.substring(0, n) : s;
     }
 
     public static void main(String[] args) {
