@@ -90,15 +90,10 @@ public class WSClientUtils {
             postMethod.setRequestEntity(requestEntity);
 
             HttpClient httpClient = new HttpClient();
-            /*RecordSet rs = new RecordSet();
-            rs.executeSql("select username, password from pi4oa_info where id=0");*/
+
             String username = "zappluser_oa";
             String password = "a1234567";
-            /*if (rs.next()) {
-                username = rs.getString("username");
-                password = rs.getString("password");
-                System.out.println("---->username:" + username + "\n---->password:" + password);
-            }*/
+
             Credentials defaultcreds = new UsernamePasswordCredentials(username, password);
             httpClient.getState().setCredentials(AuthScope.ANY, defaultcreds);
             HttpConnectionManagerParams managerParams = httpClient.getHttpConnectionManager().getParams();

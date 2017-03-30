@@ -1,5 +1,9 @@
 package weaverjn.action.integration;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
@@ -40,7 +44,7 @@ public class BusinessApprovalAction extends BaseBean implements Action {
                     "            <Company_Code></Company_Code>\n" +
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
-                    "         <lifnr>" + Util.null2String(recordSet.getString("bh")) + "</lifnr>\n" +
+                    "         <lifnr>" + Util.null2String(recordSet.getString("gysbh")) + "</lifnr>\n" +
                     "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
                     "         <nickname>" + utils.getFieldValue("uf_ghdzl", "ghfmc", Util.null2String(recordSet.getString("ghfmc"))) + "</nickname>\n" +
                     "         <zyyzz_yxq>" + Util.null2String(recordSet.getString("njrq")) + "</zyyzz_yxq>\n" +
@@ -57,10 +61,57 @@ public class BusinessApprovalAction extends BaseBean implements Action {
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
             writeLog(soapHttpRequest);
-            String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_SupplierReview_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
+            String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_BusinessApproval_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
             String response = WSClientUtils.callWebService(soapHttpRequest, url, "zappluser_oa", "a1234567");
             writeLog(response);
+            MT_BusinessApproval_Msg msg = parse(response);
+            if (msg != null) {
+                if (!msg.getMESSAGE_TYPE().equals("S")) {
+                    requestManager.setMessageid(msg.getMESSAGE_TYPE());
+                    requestManager.setMessagecontent(msg.getMESSAGE());
+                }
+            } else {
+                requestManager.setMessageid("response error");
+                requestManager.setMessagecontent(response);
+            }
         }
         return SUCCESS;
+    }
+
+    private MT_BusinessApproval_Msg parse(String response) {
+        MT_BusinessApproval_Msg msg = null;
+        Document dom;
+        try {
+            dom = DocumentHelper.parseText(response);
+            Element root = dom.getRootElement();
+            Element e = root.element("Body").element("MT_BusinessApproval_Msg");
+            msg = new MT_BusinessApproval_Msg();
+            msg.setMESSAGE_TYPE(e.elementText("MESSAGE_TYPE"));
+            msg.setMESSAGE(e.elementText("MESSAGE"));
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return msg;
+    }
+
+    class MT_BusinessApproval_Msg {
+        private String MESSAGE_TYPE;
+        private String MESSAGE;
+
+        public String getMESSAGE_TYPE() {
+            return MESSAGE_TYPE;
+        }
+
+        public void setMESSAGE_TYPE(String MESSAGE_TYPE) {
+            this.MESSAGE_TYPE = MESSAGE_TYPE;
+        }
+
+        public String getMESSAGE() {
+            return MESSAGE;
+        }
+
+        public void setMESSAGE(String MESSAGE) {
+            this.MESSAGE = MESSAGE;
+        }
     }
 }
