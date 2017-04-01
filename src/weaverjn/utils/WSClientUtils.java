@@ -40,7 +40,7 @@ public class WSClientUtils {
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
             if (statusCode != HttpStatus.SC_OK) {
-                throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";;" + serviceEpr);
+                throw new IllegalStateException("调用webservice错误:" + postMethod.getStatusLine() + ";statusCode:" + statusCode + ";serviceEpr:" + serviceEpr + ";soapRequest:" + soapRequest);
             }
 
             String soapRequestData = postMethod.getResponseBodyAsString();
@@ -59,22 +59,11 @@ public class WSClientUtils {
         }
     }
 
-
     public static String callWebServiceWithHttpHeaderParm(String soapRequest, String serviceEpr, HashMap<String, String> httpHeaderParm) {
         return callWebService(soapRequest, serviceEpr, "application/soap+xml; charset=utf-8", httpHeaderParm);
     }
 
-
-    /**
-     * 给http Header传入参数：
-     * @param soapRequest
-     * @param serviceEpr
-     * @param contentType
-     * @param repairID
-     * @return
-     */
     public static String callWebService(String soapRequest, String serviceEpr, String contentType, HashMap<String, String> httpHeaderParm) {
-
         PostMethod postMethod = new PostMethod(serviceEpr);
         //设置POST方法请求超时
         Set<String> keySet = httpHeaderParm.keySet();
@@ -103,8 +92,7 @@ public class WSClientUtils {
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
             if (statusCode != HttpStatus.SC_OK) {
-                System.out.println("----<>status code" + statusCode);
-                throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";" + serviceEpr + ";" + soapRequest);
+                throw new IllegalStateException("调用webservice错误:" + postMethod.getStatusLine() + ";statusCode:" + statusCode + ";serviceEpr:" + serviceEpr + ";soapRequest:" + soapRequest);
             }
 
             String soapRequestData = postMethod.getResponseBodyAsString();
