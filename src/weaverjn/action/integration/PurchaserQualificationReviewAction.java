@@ -17,6 +17,7 @@ import weaverjn.utils.WSClientUtils;
  * Created by zhaiyaqi on 2017/4/1.
  */
 public class PurchaserQualificationReviewAction extends BaseBean implements Action{
+    private String vkorg;
     @Override
     public String execute(RequestInfo requestInfo) {
         RequestManager requestManager = requestInfo.getRequestManager();
@@ -42,6 +43,7 @@ public class PurchaserQualificationReviewAction extends BaseBean implements Acti
                     "            <Company_Code></Company_Code>\n" +
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
+                    "         <VKORG>" + this.vkorg + "</VKORG>\n" +
                     "         <KUNNER>" + Util.null2String(recordSet.getString("ghdwbm")) + "</KUNNER>\n" +
                     "         <ZXFCGY_XM>" + utils.getFieldValue("hrmresource", "lastname", Util.null2String(recordSet.getString("cgyxm"))) + "</ZXFCGY_XM>\n" +
                     "         <ZSQ_BGN>" + Util.null2String(recordSet.getString("sqqzrq")) + "</ZSQ_BGN>\n" +
@@ -90,6 +92,14 @@ public class PurchaserQualificationReviewAction extends BaseBean implements Acti
             e.printStackTrace();
         }
         return msg;
+    }
+
+    public String getVkorg() {
+        return vkorg;
+    }
+
+    public void setVkorg(String vkorg) {
+        this.vkorg = vkorg;
     }
 
     class MT_PurchaserQualificationReview_MSg {

@@ -17,6 +17,7 @@ import weaverjn.utils.WSClientUtils;
  * Created by zhaiyaqi on 2017/3/28.
  */
 public class SupplierReviewAction extends BaseBean implements Action {
+    private String ekorg;
     @Override
     public String execute(RequestInfo requestInfo) {
         RequestManager requestManager = requestInfo.getRequestManager();
@@ -42,7 +43,8 @@ public class SupplierReviewAction extends BaseBean implements Action {
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
                     "         <lifnr>" + Util.null2String(recordSet.getString("bh")) + "</lifnr>\n" +
-                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
+//                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
+                    "         <ekorg>" + this.ekorg + "</ekorg>\n" +
                     "         <status>Y</status>\n" +
                     "      </erp:MT_SupplierReview>\n" +
                     "   </soapenv:Body>\n" +
@@ -79,6 +81,14 @@ public class SupplierReviewAction extends BaseBean implements Action {
             e.printStackTrace();
         }
         return msg;
+    }
+
+    public String getEkorg() {
+        return ekorg;
+    }
+
+    public void setEkorg(String ekorg) {
+        this.ekorg = ekorg;
     }
 
     class MT_SupplierReview_Msg {

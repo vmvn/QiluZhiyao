@@ -63,6 +63,14 @@ public class utils extends BaseBean{
         return s.length() > n ? s.substring(0, n) : s;
     }
 
+    public static String getUsername() {
+        return "zappluser_oa";
+    }
+
+    public static String getPassword() {
+        return "a1234567";
+    }
+
     public static void main(String[] args) {
         String s = "123456789qwerasd";
         String[] arr = slice(s, 5, 4);

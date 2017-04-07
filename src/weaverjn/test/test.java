@@ -1,6 +1,7 @@
 package weaverjn.test;
 
 import com.runqian.report4.model.expression.function.string.URLEncode;
+import com.sap.mw.jco.JCO;
 import com.steadystate.css.parser.SACParserCSS1;
 import freemarker.ext.beans.HashAdapter;
 import org.dom4j.Document;
@@ -22,36 +23,14 @@ import java.util.*;
  */
 public class test {
     public static void main(String[] args) {
-        String billid = "22";
-        UpdateITEquipmentInfoFromSAP t = new UpdateITEquipmentInfoFromSAP();
-        SAPEquipmentInfo sapEquipmentInfo = new SAPEquipmentInfo();
-        String sql = "update uf_itsbgl set " +
-                "pz='" + Util.null2String(sapEquipmentInfo.getEQUIPMENT_DESC()) + "', " +
-                "zzs='" + Util.null2String(sapEquipmentInfo.getMANUFACTURER()) + "', " +
-                "ppxh='" + Util.null2String(sapEquipmentInfo.getEQTYP()) + "', " +
-                "xlh='" + Util.null2String(sapEquipmentInfo.getSERIAL_NO()) + "', " +
-                "gmrq='" + Util.null2String(sapEquipmentInfo.getPURCHASE_DATA()) + "', " +
-                "jhgcms='" + Util.null2String(sapEquipmentInfo.getPLANT_DESC()) + "', " +
-                "jhyzms='" + Util.null2String(sapEquipmentInfo.getPLANNER_GRP_DESC()) + "', " +
-                "gzzxms='" + Util.null2String(sapEquipmentInfo.getWORK_CTR_DESC()) + "' " +
-                "where id=" + billid;
-        RecordSet recordSet = new RecordSet();
-        System.out.println(sql);
+        String s = "00000000000000000000123";
+        System.out.println(new test().del0(s));
     }
 
-    private String[] getRet_Messages(String string) {
-        String[] v = new String[2];
-        try {
-            Document dom = DocumentHelper.parseText(string);
-            Element root = dom.getRootElement();
-            Element Ret_Messages = root.element("Body").element("MT_DemandPlan_RetMsg").element("Ret_Messages");
-            String MSG_TYPE = Ret_Messages.elementText("MSG_TYPE");
-            String MESSAGE = Ret_Messages.elementText("MESSAGE");
-            v[0] = MSG_TYPE;
-            v[1] = MESSAGE;
-        } catch (DocumentException e) {
-            e.printStackTrace();
+    private String del0(String s) {
+        while (s.startsWith("0")) {
+            s = s.substring(1);
         }
-        return v;
+        return s;
     }
 }

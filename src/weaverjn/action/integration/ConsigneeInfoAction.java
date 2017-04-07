@@ -15,6 +15,7 @@ import weaverjn.utils.WSClientUtils;
  * Created by zhaiyaqi on 2017/4/1.
  */
 public class ConsigneeInfoAction extends BaseBean implements Action {
+    private String vkorg;
     @Override
     public String execute(RequestInfo requestInfo) {
         String billId = requestInfo.getRequestid();
@@ -38,7 +39,7 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
                     "            <Company_Code></Company_Code>\n" +
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
-                    "         <VKORG>" + Util.null2String(recordSet.getString("ghdwbh")) + "</VKORG>\n" +
+                    "         <VKORG>" + this.vkorg + "</VKORG>\n" +
                     "         <KUNNR>" + Util.null2String(recordSet.getString("ghdwbh")) + "</KUNNR>\n" +
                     "         <ZSQ_BGN>" + Util.null2String(recordSet.getString("sqqrq")) + "</ZSQ_BGN>\n" +
                     "         <ZSQ_END>" + Util.null2String(recordSet.getString("sqzrq")) + "</ZSQ_END>\n" +
@@ -90,6 +91,15 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
         }
         return msg;
     }
+
+    public String getVkorg() {
+        return vkorg;
+    }
+
+    public void setVkorg(String vkorg) {
+        this.vkorg = vkorg;
+    }
+
     class MT_ConsigneeInfo_Msg {
         private String MESSAGE_TYPE;
         private String MESSAGE;

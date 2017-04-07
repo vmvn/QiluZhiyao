@@ -17,6 +17,7 @@ import weaverjn.utils.WSClientUtils;
  * Created by zhaiyaqi on 2017/3/28.
  */
 public class BusinessApprovalAction extends BaseBean implements Action {
+    private String ekorg;
     @Override
     public String execute(RequestInfo requestInfo) {
         RequestManager requestManager = requestInfo.getRequestManager();
@@ -45,7 +46,8 @@ public class BusinessApprovalAction extends BaseBean implements Action {
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
                     "         <lifnr>" + Util.null2String(recordSet.getString("gysbh")) + "</lifnr>\n" +
-                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
+//                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
+                    "         <ekorg>" + this.ekorg + "</ekorg>\n" +
                     "         <nickname>" + utils.getFieldValue("uf_ghdzl", "ghfmc", Util.null2String(recordSet.getString("ghfmc"))) + "</nickname>\n" +
                     "         <zyyzz_yxq>" + Util.null2String(recordSet.getString("njrq")) + "</zyyzz_yxq>\n" +
                     "         <zxkz_yxq>" + Util.null2String(recordSet.getString("yxqz")) + "</zxkz_yxq>\n" +
@@ -92,6 +94,14 @@ public class BusinessApprovalAction extends BaseBean implements Action {
             e.printStackTrace();
         }
         return msg;
+    }
+
+    public String getEkorg() {
+        return ekorg;
+    }
+
+    public void setEkorg(String ekorg) {
+        this.ekorg = ekorg;
     }
 
     class MT_BusinessApproval_Msg {
