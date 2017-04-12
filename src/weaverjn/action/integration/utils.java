@@ -3,9 +3,13 @@ package weaverjn.action.integration;
 import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
+import weaver.soa.workflow.request.MainTableInfo;
+import weaver.soa.workflow.request.Property;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhaiyaqi on 2017/2/14.
@@ -69,6 +73,28 @@ public class utils extends BaseBean{
 
     public static String getPassword() {
         return "a1234567";
+    }
+
+    public static Map<String, String> getMainTableData(MainTableInfo mainTableInfo) {
+        Map<String, String> mainTableData = new HashMap<String, String>();
+        Property[] properties = mainTableInfo.getProperty();
+        for (Property property : properties) {
+            String name = property.getName();
+            String value = Util.null2String(property.getValue());
+            mainTableData.put(name, value);
+        }
+        return mainTableData;
+    }
+
+    public static String getSelectName(String fieldid, String selectvalue) {
+        String sql = "select selectname from workflow_selectitem where fieldid='" + fieldid + "' and selectvalue='" + selectvalue + "'";
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        String selectname = "";
+        if (recordSet.next()) {
+            selectname = recordSet.getString("selectname");
+        }
+        return selectname;
     }
 
     public static void main(String[] args) {
