@@ -5,6 +5,7 @@ import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.soa.workflow.request.MainTableInfo;
 import weaver.soa.workflow.request.Property;
+import weaverjn.utils.PropertiesUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,11 +69,19 @@ public class utils extends BaseBean{
     }
 
     public static String getUsername() {
-        return "zappluser_oa";
+        String username = new PropertiesUtil().getPropValue("qiluSAPauth", "username");
+        if (username.isEmpty()) {
+            username = "zappluser_oa";
+        }
+        return username;
     }
 
     public static String getPassword() {
-        return "a1234567";
+        String password = new PropertiesUtil().getPropValue("qiluSAPauth", "password");
+        if (password.isEmpty()) {
+            password = "a1234567";
+        }
+        return password;
     }
 
     public static Map<String, String> getMainTableData(MainTableInfo mainTableInfo) {

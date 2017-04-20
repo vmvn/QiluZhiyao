@@ -8,12 +8,12 @@ import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
+import weaverjn.action.integration.utils;
 import weaverjn.qlzy.sap.WSClientUtils;
 import weaverjn.utils.PropertiesUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Iterator;
 
 //固定资产采购
@@ -128,13 +128,11 @@ public class GDZCCGAction extends BaseBean implements Action {
 						"</soapenv:Envelope>";
 
 				log(request);
-				HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-				httpHeaderParm.put("instId", "10062");
-				httpHeaderParm.put("repairType", "RP");
-				String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request,
-						"http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_OAAsset_Req_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/",
-						httpHeaderParm);
-				log("----<GDZCCGAction>" + response);
+				String username = utils.getUsername();
+				String password = utils.getPassword();
+				String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+				String response = WSClientUtils.callWebService(request, endpoint, username, password);
+				log(response);
 
 				//处理response
 				Document dom = DocumentHelper.parseText(response);
@@ -189,9 +187,8 @@ public class GDZCCGAction extends BaseBean implements Action {
 	}
 
 	private void log(Object o) {
-		String prefix = "<" + this.getClass().getName() + ">";
-		writeLog(prefix + o);
-		System.out.println(prefix + o);
+		writeLog(o);
+		System.out.println(o);
 	}
 
 	private String getCompanyCode(String id) {

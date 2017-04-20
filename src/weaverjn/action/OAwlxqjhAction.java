@@ -10,12 +10,12 @@ import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
+import weaverjn.action.integration.utils;
 import weaverjn.qlzy.sap.WSClientUtils;
 import weaverjn.utils.PropertiesUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Created by zhaiyaqi on 2016/11/19.
@@ -84,11 +84,10 @@ public class OAwlxqjhAction extends BaseBean implements Action {
                             "   </soapenv:Body>\n" +
                             "</soapenv:Envelope>";
                     log(request);
-                    HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-                    String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_DemandPlan_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-                    httpHeaderParm.put("instId", "10062");
-                    httpHeaderParm.put("repairType", "RP");
-                    String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
+                    String username = utils.getUsername();
+                    String password = utils.getPassword();
+                    String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+                    String response = WSClientUtils.callWebService(request, endpoint, username, password);
                     log("---->" + response);
                     ret_messages = getRet_Messages(response);
                 }

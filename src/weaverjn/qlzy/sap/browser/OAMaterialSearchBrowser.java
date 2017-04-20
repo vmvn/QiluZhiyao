@@ -5,14 +5,15 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import weaver.general.BaseBean;
+import weaverjn.action.integration.utils;
 import weaverjn.qlzy.sap.WSClientUtils;
+import weaverjn.utils.PropertiesUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -57,7 +58,7 @@ public class OAMaterialSearchBrowser extends BaseBean {
                 "         <ControlInfo>\n" +
                 "            <INTF_ID>I0031</INTF_ID>\n" +
                 "            <Src_System>OA</Src_System>\n" +
-                "            <Dest_System>SAPERP</Dest_System>\n" +
+                "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
                 "            <Company_Code>" + Company_Code + "</Company_Code>\n" +
                 "            <Send_Time>20161201131310</Send_Time>\n" +
                 "         </ControlInfo>\n" +
@@ -70,11 +71,10 @@ public class OAMaterialSearchBrowser extends BaseBean {
                 "      </erp:MT_OAMaterialSearch>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
-        HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-        String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_OAMaterialSearch_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-        httpHeaderParm.put("instId", "10062");
-        httpHeaderParm.put("repairType", "RP");
-        String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
+        String username = utils.getUsername();
+        String password = utils.getPassword();
+        String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+        String response = WSClientUtils.callWebService(request, endpoint, username, password);
         log("----<M>" + response);
         String datas = parseData(response);
         datas = datas.replaceAll("&", "&amp;");

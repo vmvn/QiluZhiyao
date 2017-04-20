@@ -5,9 +5,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import weaver.general.BaseBean;
+import weaverjn.action.integration.utils;
 import weaverjn.qlzy.sap.WSClientUtils;
-
-import java.util.HashMap;
+import weaverjn.utils.PropertiesUtil;
 
 /**
  * Created by zhaiyaqi on 2017/1/17.
@@ -33,7 +33,7 @@ public class UpdateITEquipmentInfoFromSAP extends BaseBean {
                 "         <ControlInfo>\n" +
                 "            <INTF_ID>I0048</INTF_ID>\n" +
                 "            <Src_System>OA</Src_System>\n" +
-                "            <Dest_System>SAPERP</Dest_System>\n" +
+                "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
                 "            <Company_Code></Company_Code>\n" +
                 "            <Send_Time></Send_Time>\n" +
                 "         </ControlInfo>\n" +
@@ -44,11 +44,10 @@ public class UpdateITEquipmentInfoFromSAP extends BaseBean {
                 "      </erp:MT_Search_Equi>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
-        HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-        String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Equipment_Info_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-        httpHeaderParm.put("instId", "10062");
-        httpHeaderParm.put("repairType", "RP");
-        String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
+        String username = utils.getUsername();
+        String password = utils.getPassword();
+        String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+        String response = WSClientUtils.callWebService(request, endpoint, username, password);
         SAPEquipmentInfo sapEquipmentInfo = parse(response);
         if (sapEquipmentInfo == null) {
             return false;

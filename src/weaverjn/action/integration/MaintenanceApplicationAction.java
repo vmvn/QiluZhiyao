@@ -12,8 +12,6 @@ import weaver.soa.workflow.request.RequestInfo;
 import weaverjn.qlzy.sap.WSClientUtils;
 import weaverjn.utils.PropertiesUtil;
 
-import java.util.HashMap;
-
 /**
  * Created by zhaiyaqi on 2017/3/2.
  */
@@ -50,11 +48,10 @@ public class MaintenanceApplicationAction extends BaseBean implements Action {
                     "      </erp:MT_Maintain_Order_Req>\n" +
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
-            HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-            String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Maintain_Order_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-            httpHeaderParm.put("instId", "10062");
-            httpHeaderParm.put("repairType", "RP");
-            String soapHttpResponse = WSClientUtils.callWebServiceWithHttpHeaderParm(soapHttpRequest, url, httpHeaderParm);
+            String username = utils.getUsername();
+            String password = utils.getPassword();
+            String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+            String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, username, password);
             MT_Maintain_Order_Ret ret = parse(soapHttpResponse);
             if (ret != null) {
                 if (ret.getMSG_TYPE().equals("S")) {
