@@ -1,16 +1,13 @@
 package weaverjn.action.integration;
 
-import java.util.HashMap;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
+import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
-import weaver.soa.workflow.request.Property;
 import weaver.soa.workflow.request.RequestInfo;
 import weaverjn.qlzy.sap.WSClientUtils;
 import weaverjn.utils.PropertiesUtil;
@@ -22,42 +19,38 @@ import weaverjn.utils.PropertiesUtil;
  * 2017年4月18日 上午10:10:12
  */
 public class MaterialQualification extends BaseBean implements Action  {
-	private static final String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Material_Qualification_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-	private String MATNR = "";
-	private String WERKS = "";
-	private String DEAL_SCPOE = "";
-	
 	@Override
 	public String execute(RequestInfo requestInfo) {
-		Property[] properties = requestInfo.getMainTableInfo().getProperty();// 获取表单主字段信息
-		String name = "",value = "";
-		for (int i = 0; i < properties.length; i++) {
-			name = properties[i].getName();// 主字段名称
-			value = Util.null2String(properties[i].getValue());// 主字段对应的值
-			if(name.equals("spbh"))
-				setMATNR(value);
-		}
-		String tag = "erp:MT_DrugInformation";
+		String requestId = requestInfo.getRequestid();
+		String tableName = requestInfo.getRequestManager().getBillTableName();
+		String sql = "select id from " + tableName + " where requestid=" + requestId;
+		RecordSet recordSet = new RecordSet();
+		recordSet.executeSql(sql);
+		recordSet.next();
+		int id = recordSet.getInt("id");
+		String dt1 = tableName + "_dt1";
+		String tag = "erp:MT_Material_Qualification_Req";
 		String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">" +
-                "   <soapenv:Header/>\n" +
-                "   <soapenv:Body>\n" +
-                "      <"+tag+">\n" +
-                "         <ControlInfo>\n" +
-                "            <INTF_ID></INTF_ID>\n" +
-                "            <Src_System>OA</Src_System>\n" +
-                "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
-                "            <Company_Code></Company_Code>\n" +
-                "            <Send_Time></Send_Time>\n" +
-                "         </ControlInfo>\n" + getLine() +
-                "      </"+tag+">\n" +
-                "   </soapenv:Body>\n" +
-                "</soapenv:Envelope>";
-        log(request);
+				"   <soapenv:Header/>\n" +
+				"   <soapenv:Body>\n" +
+				"      <" + tag + ">\n" +
+				"         <ControlInfo>\n" +
+				"            <INTF_ID></INTF_ID>\n" +
+				"            <Src_System>OA</Src_System>\n" +
+				"            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
+				"            <Company_Code></Company_Code>\n" +
+				"            <Send_Time></Send_Time>\n" +
+				"         </ControlInfo>\n" +
+				getLine(dt1, id) +
+				"      </" + tag + ">\n" +
+				"   </soapenv:Body>\n" +
+				"</soapenv:Envelope>";
+		writeLog(request);
 		String username = utils.getUsername();
 		String password = utils.getPassword();
 		String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
 		String response = WSClientUtils.callWebService(request, endpoint, username, password);
-        log(response);
+		writeLog(response);
         RET_MSG ret_msg = getRET_MSG(response);
         if (ret_msg == null) {
             requestInfo.getRequestManager().setMessageid("Message");
@@ -70,20 +63,29 @@ public class MaterialQualification extends BaseBean implements Action  {
         }
 		return Action.SUCCESS;
 	}
-	/**
-	 * <br/>2017年4月18日 上午11:55:53<br/>
-	 * @return
-	 */
-	private String getLine() {
-		StringBuffer sb = new StringBuffer();
-		
 
-		return sb.toString();
-	}
-	private void log(Object o) {
-		String prefix = "<" + this.getClass().getName() + ">";
-		System.out.println(prefix + o);
-		writeLog(prefix + o);
+	private String getLine(String dt1, int id) {
+		String sql = "select spbh from " + dt1 + " where mainid=" + id;
+		RecordSet recordSet = new RecordSet();
+		RecordSet recordSet1 = new RecordSet();
+		recordSet.executeSql(sql);
+		StringBuilder stringBuilder = new StringBuilder();
+		while (recordSet.next()) {
+			String spbh = Util.null2String(recordSet.getString("spbh"));
+			sql = "select * from uf_sdwrypzl where ypbh='" + spbh + "'";
+			recordSet1.executeSql(sql);
+			if (recordSet1.next()) {
+				stringBuilder.append("<Mater_Qual>\n")
+						.append("<MATNR>").append(Util.null2String(recordSet1.getString("ypbh"))).append("</MATNR>\n")
+						.append("<WERKS>").append(utils.getFieldValue("uf_sapjcsj_gc", "gcbm", Util.null2String(recordSet1.getString("gc")))).append("</WERKS>\n")
+						.append("<SPERM>").append("N").append("</SPERM>\n")
+						.append("<DEAL_SCPOE>").append("").append("</DEAL_SCPOE>\n")
+						.append("<EXPIRY_DATE_GMP>").append(Util.null2String(recordSet1.getString("gmpzsyxq"))).append("</EXPIRY_DATE_GMP>\n")
+						.append("<EXPIRY_DATE_LICENSE>").append(Util.null2String(recordSet.getString("pzwhyxqz"))).append("</EXPIRY_DATE_LICENSE>\n")
+						.append("</Mater_Qual>\n");
+			}
+		}
+		return stringBuilder.toString();
 	}
 	
     private RET_MSG getRET_MSG(String s) {
@@ -101,26 +103,5 @@ public class MaterialQualification extends BaseBean implements Action  {
         }
         return ret_msg;
     }
-
-	public String getMATNR() {
-		return MATNR;
-	}
-	public void setMATNR(String mATNR) {
-		MATNR = mATNR;
-	}
-	public String getWERKS() {
-		return WERKS;
-	}
-	public void setWERKS(String wERKS) {
-		WERKS = wERKS;
-	}
-	public String getDEAL_SCPOE() {
-		return DEAL_SCPOE;
-	}
-	public void setDEAL_SCPOE(String dEAL_SCPOE) {
-		DEAL_SCPOE = dEAL_SCPOE;
-	}
-
-	
 }
 	

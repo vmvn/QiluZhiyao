@@ -98,10 +98,11 @@ public class Equipment2OABrowser extends BaseBean {
                 "      </erp:MT_Equi_Par>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
-        log(request);
+        writeLog(request);
         String username = utils.getUsername();
         String password = utils.getPassword();
         String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+        writeLog(endpoint);
         String response = WSClientUtils.callWebService(request, endpoint, username, password);
         datas = parseData(response);
         datas = datas.replaceAll("&", "&amp;");
@@ -164,11 +165,6 @@ public class Equipment2OABrowser extends BaseBean {
         }
         s.append("</list>");
         return s.toString();
-    }
-
-    private void log(Object o) {
-        writeLog(o);
-        System.out.println(o);
     }
 
     private void exesql(ArrayList<String> arrayList) {

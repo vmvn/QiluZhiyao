@@ -1,6 +1,7 @@
 package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
+import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.schedule.BaseCronJob;
 
@@ -11,15 +12,20 @@ import java.util.Date;
  * Created by dzyq on 2016/9/5 8:58.
  */
 public class RemindMoreSchedule extends BaseCronJob {
+    private final BaseBean baseBean = new BaseBean();
+
+    private void logger(Object o) {
+        baseBean.writeLog(this.getClass().getName() + " - " + o);
+    }
+
     public void execute() {
-        System.out.println("------>RemindMoreSchedule run!");
+        logger("run");
         RecordSet recordSet = new RecordSet();
         String sql = "select * from workflow_currentoperator where viewtype=-1";
         recordSet.executeSql(sql);
         while (recordSet.next()) {
             String userid = Util.null2String(recordSet.getString("userid"));
             String requestid = Util.null2String(recordSet.getString("requestid"));
-//            System.out.println("---->RemindMoreSchedule run:" + userid + ";" + requestid);
 
             sql = "select * from SysPoppupRemindInfoNew where userid=" + userid + " and requestid=" + requestid;
             RecordSet recordSet1 = new RecordSet();
@@ -30,7 +36,7 @@ public class RemindMoreSchedule extends BaseCronJob {
                 Date date = new Date();
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String now = simpleDateFormat.format(date);
-                System.out.println("---->RemindMoreSchedule run:" + now + ";" + userid + ";" + requestid);
+                logger("" + now + ";" + userid + ";" + requestid);
             }
         }
     }

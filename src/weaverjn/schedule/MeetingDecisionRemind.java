@@ -1,6 +1,7 @@
 package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
+import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.schedule.BaseCronJob;
 import weaver.system.SysRemindWorkflow;
@@ -14,8 +15,14 @@ import java.util.Date;
  * Created by dzyq on 2016/6/20.
  */
 public class MeetingDecisionRemind extends BaseCronJob {
+    private final BaseBean baseBean = new BaseBean();
+
+    private void logger(Object o) {
+        baseBean.writeLog(this.getClass().getName() + " - " + o);
+    }
+
     public void execute() {
-        System.out.println("---->MeetingDecisionRemind start");
+        logger("run");
         Calendar now = Calendar.getInstance();
         Calendar twoDaysAgo = Calendar.getInstance();
         twoDaysAgo.add(Calendar.DATE, -2);
@@ -35,7 +42,7 @@ public class MeetingDecisionRemind extends BaseCronJob {
         while (rs.next()) {
             String enddate = Util.null2String(rs.getString("enddate"));
             String endtime = Util.null2String(rs.getString("endtime"));
-            System.out.println("---->enddate,endtime:" + enddate + "," + endtime);
+            logger("---->enddate,endtime:" + enddate + "," + endtime);
             if (enddate.isEmpty() || endtime.isEmpty()) {
                 continue;
             }
@@ -45,16 +52,16 @@ public class MeetingDecisionRemind extends BaseCronJob {
                 Calendar calenddatetime = Calendar.getInstance();
                 calenddatetime.setTime(enddatetime);
                 if (calenddatetime.after(twoDaysAgo) && calenddatetime.before(now)) {
-                    System.out.println("---->twoDaysAgo:" + sdf.format(twoDaysAgo.getTime()));
-                    System.out.println("---->结束时间:" + sdf.format(calenddatetime.getTime()));
-                    System.out.println("---->now:" + sdf.format(now.getTime()));
+                    logger("---->twoDaysAgo:" + sdf.format(twoDaysAgo.getTime()));
+                    logger("---->结束时间:" + sdf.format(calenddatetime.getTime()));
+                    logger("---->now:" + sdf.format(now.getTime()));
                     String contacter = Util.null2String(rs.getString("contacter"));
                     String jlr = Util.null2String(rs.getString("jlr"));
                     String name = Util.null2String(rs.getString("name"));
                     String meetingid = Util.null2String(rs.getString("id"));
                     String accessorys = Util.null2String(rs.getString("accessorys"));
                     String projectid = Util.null2String(rs.getString("projectid"));
-                    System.out.println("-------->id:" + meetingid);
+                    logger("-------->id:" + meetingid);
                     SysRemindWorkflow sysRemindWorkflow = new SysRemindWorkflow();
                     try {
                         int requestid = 0;
@@ -63,18 +70,18 @@ public class MeetingDecisionRemind extends BaseCronJob {
                             sql = "insert into meeting_decision_remind(id, isremind) values(" + meetingid + ",1)";
                             RecordSet rs1 = new RecordSet();
                             if (rs1.executeSql(sql)) {
-                                System.out.println("---->插入状态成功" + meetingid);
+                                logger("---->插入状态成功" + meetingid);
                             } else {
                                 sql = "update meeting_decision_remind set isremind=1 where id=" + meetingid;
                                 if (rs1.executeSql(sql)) {
-                                    System.out.println("---->更新状态成功" + meetingid);
+                                    logger("---->更新状态成功" + meetingid);
                                 } else {
-                                    System.out.println("---->失败" + meetingid);
+                                    logger("---->失败" + meetingid);
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        System.out.println("---->会议决议填写提醒流程创建失败！");
+                        logger("---->会议决议填写提醒流程创建失败！");
                         e.printStackTrace();
                     }
                 }

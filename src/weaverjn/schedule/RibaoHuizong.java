@@ -2,6 +2,7 @@ package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
 import weaver.formmode.setup.ModeRightInfo;
+import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.schedule.BaseCronJob;
 
@@ -13,13 +14,19 @@ import java.util.Date;
  * Created by dzyq on 2016/5/14 15:24.
  */
 public class RibaoHuizong extends BaseCronJob {
+    private final BaseBean baseBean = new BaseBean();
+
+    private void logger(Object o) {
+        baseBean.writeLog(this.getClass().getName() + " - " + o);
+    }
+
     public void execute() {
         Date today = new Date();
         int dayOfWeek = getDayOfWeek(today);
         if (dayOfWeek != 7) {
-            System.out.println("---->RibaoHuizong:Not Saturday");
+            logger("---->RibaoHuizong:Not Saturday");
         } else {
-            System.out.println("---->RibaoHuizong:Start");
+            logger("---->RibaoHuizong:Start");
             RecordSet rs = new RecordSet();
             SimpleDateFormat SDFDATE = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
@@ -66,7 +73,7 @@ public class RibaoHuizong extends BaseCronJob {
                         "'" + friday + "', " +
                         "'23:00' " +
                         ") ";
-                System.out.println("---->SQL:" + SQL);
+                logger("---->SQL:" + SQL);
                 if (rs1.executeSql(SQL)) {
                     SQL = "select max(id) maxid from uf_zzj";
                     rs2.executeSql(SQL);
@@ -76,9 +83,9 @@ public class RibaoHuizong extends BaseCronJob {
                     }
                     ModeRightInfo modeRightInfo = new ModeRightInfo();
                     modeRightInfo.editModeDataShare(Util.getIntValue(cjr), 462, maxid);
-                    System.out.println("---->RibaoHuizong:OK:" + uid);
+                    logger("---->RibaoHuizong:OK:" + uid);
                 } else {
-                    System.out.println("---->RibaoHuizong:NOT OK:" + uid);
+                    logger("---->RibaoHuizong:NOT OK:" + uid);
                 }
             }
         }

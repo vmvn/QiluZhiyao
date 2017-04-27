@@ -2,6 +2,7 @@ package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
 import weaver.conn.RecordSetTrans;
+import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.schedule.BaseCronJob;
 
@@ -9,8 +10,14 @@ import weaver.interfaces.schedule.BaseCronJob;
  * Created by dzyq on 2016/7/5.
  */
 public class PrjShareShare extends BaseCronJob {
+    private final BaseBean baseBean = new BaseBean();
+
+    private void logger(Object o) {
+        baseBean.writeLog(this.getClass().getName() + " - " + o);
+    }
+
     public void execute() {
-        System.out.println("---->PrjShareShare");
+        logger("run");
         RecordSet rs = new RecordSet();
         RecordSet rs2 = new RecordSet();
         RecordSet rs3 = new RecordSet();
@@ -26,7 +33,7 @@ public class PrjShareShare extends BaseCronJob {
                 sql = "select * from Prj_ShareInfo where relateditemid=" + id + " and userid=" + userId + " and sharelevel=1";
                 rs3.executeSql(sql);
                 if (rs3.next()) {
-//                    System.out.println("---->" + userId + ":" + id + ":look");
+//                    logger(userId + ":" + id + ":look");
                 } else {
                     String ProcPara = "";
                     char flag = 2;
@@ -52,7 +59,7 @@ public class PrjShareShare extends BaseCronJob {
                             rst.executeSql("update Prj_ShareInfo set seclevelMax='" + "100" + "' where id=" + newid);
                         }
                         rst.commit();
-                        System.out.println("---->" + userId + ":" + id + ":added look");
+                        logger(userId + ":" + id + ":added look");
                     }catch(Exception e){
                         rst.rollback();
                     }

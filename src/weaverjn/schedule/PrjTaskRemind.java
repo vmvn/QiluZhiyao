@@ -1,6 +1,7 @@
 package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
+import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.schedule.BaseCronJob;
 import weaver.system.SysRemindWorkflow;
@@ -13,10 +14,16 @@ import java.util.Calendar;
  * Created by dzyq on 2016/7/7 13:53.
  */
 public class PrjTaskRemind extends BaseCronJob {
+    private final BaseBean baseBean = new BaseBean();
+
+    private void logger(Object o) {
+        baseBean.writeLog(this.getClass().getName() + " - " + o);
+    }
+    
     public void execute() {
         Calendar now = Calendar.getInstance();
         String sNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now.getTime());
-        System.out.println("---->PrjTaskRemind:" + sNow);
+        logger(sNow);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String sToday = simpleDateFormat.format(now.getTime());
@@ -59,11 +66,10 @@ public class PrjTaskRemind extends BaseCronJob {
                     } else if (sToday.equals(s10DaysAgo)) {
                         content = "提醒：任务-" + subject + " 将于10天后结束！";
                     } else if (simpleDateFormat.parse(sToday).getTime() > simpleDateFormat.parse(enddate).getTime()) {
-//                        int days = Integer.parseInt(sToday.replace("-", "")) - Integer.parseInt(enddate.replace("-", ""));
                         int days = (int) ((simpleDateFormat.parse(sToday).getTime() - simpleDateFormat.parse(enddate).getTime()) / (24 * 3600 * 1000));
                         content = "提醒：任务-" + subject + " 已到期" + days + "天！";
                     } else {
-                        System.out.println("---->Task:" + id + " is OK");
+                        logger("task:" + id + " is ok!");
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -73,7 +79,7 @@ public class PrjTaskRemind extends BaseCronJob {
                     try {
                         sysRemindWorkflow.make(title, 0, 0, Util.getIntValue(prjid), 0, 1, hrmid, content);
                     } catch (Exception e) {
-                        System.out.println("---->Task:" + id + " workflow error!");
+                        logger("task:" + id + " workflow error!");
                         e.printStackTrace();
                     }
                 }

@@ -1,6 +1,7 @@
 package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
+import weaver.general.BaseBean;
 import weaver.interfaces.schedule.BaseCronJob;
 import weaver.system.SysRemindWorkflow;
 
@@ -11,8 +12,14 @@ import java.util.Calendar;
  * Created by dzyq on 2016/8/1 9:54.
  */
 public class DuBanSchedule extends BaseCronJob {
+    private final BaseBean baseBean = new BaseBean();
+
+    private void logger(Object o) {
+        baseBean.writeLog(this.getClass().getName() + " - " + o);
+    }
+
     public void execute() {
-        System.out.println("---->DuBanSchedule");
+        logger("run");
         RecordSet recordSet = new RecordSet();
         String sql = "select * from formtable_main_18 where (remindflag1 is null or remindflag1=1) and wcjd=100 and zt=3";
         recordSet.executeSql(sql);
@@ -30,7 +37,7 @@ public class DuBanSchedule extends BaseCronJob {
                 RecordSet recordSet1 = new RecordSet();
                 recordSet1.executeSql(sql);
             } catch (Exception e) {
-                System.out.println("---->dbsx:" + id + " workflow error!");
+                logger("Duban:" + id + " SysRemindWorkflow error!");
                 e.printStackTrace();
             }
         }

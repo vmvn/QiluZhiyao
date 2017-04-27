@@ -40,6 +40,24 @@ public class JnUtils {
 	 * @return
 	 */
 	public static String getFieldname(String table,String key,String value) {
+//		RecordSet rs = new RecordSet();
+//		String sql = "select SELECTNAME from WORKFLOW_SELECTITEM where fieldid=(select id from workflow_billfield where billid=(select id from workflow_bill where tablename = '"+table+"') and fieldname='"+key+"') and SELECTVALUE='"+value+"'";
+//		rs.executeSql(sql);
+//		if(rs.next())
+//			return Util.null2String(rs.getString("selectname"));
+//		return "";
+		return value;
+	}
+
+	/**
+	 * 获得下拉框对应的selectname值
+	 * <br/>2017年4月21日 上午9:41:27<br/>
+	 * @param table 对应表名
+	 * @param key 列的key  jx
+	 * @param value 列的value 0 1 2 3
+	 * @return
+	 */
+	public static String getFieldValue(String table,String key,String value) {
 		RecordSet rs = new RecordSet();
 		String sql = "select SELECTNAME from WORKFLOW_SELECTITEM where fieldid=(select id from workflow_billfield where billid=(select id from workflow_bill where tablename = '"+table+"') and fieldname='"+key+"') and SELECTVALUE='"+value+"'";
 		rs.executeSql(sql);
@@ -47,7 +65,8 @@ public class JnUtils {
 			return Util.null2String(rs.getString("selectname"));
 		return "";
 	}
-
+	
+	
 	/**
 	 * 根据用户id取得用户姓名
 	 * <br/>2017年4月21日 上午9:55:59<br/>

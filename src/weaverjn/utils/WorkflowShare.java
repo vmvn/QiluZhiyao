@@ -26,7 +26,7 @@ public class WorkflowShare {
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
         HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
-        String url = "http://192.168.1.108/services/DBUtilService";
+        String url = new PropertiesUtil().getPropValue("integrationOA", "url") + "/services/DBUtilService";
         httpHeaderParm.put("instId", "10062");
         httpHeaderParm.put("repairType", "RP");
         String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
