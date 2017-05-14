@@ -70,7 +70,7 @@ public class Workflow {
         {
         	Property p=new Property();
             p.setName(o[i]+"");
-            //p.setType("1");
+            //p.set_dt("1");
             p.setValue(Util.null2String((String) instance.get(o[i])));
             table.addProperty(p);
         }

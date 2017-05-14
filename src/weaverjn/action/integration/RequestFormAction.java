@@ -10,6 +10,7 @@ import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
+import weaverjn.utils.PropertiesUtil;
 import weaverjn.utils.WSClientUtils;
 
 /**
@@ -36,15 +37,24 @@ public class RequestFormAction extends BaseBean implements Action{
                     "   <soapenv:Header/>\n" +
                     "   <soapenv:Body>\n" +
                     "      <erp:MT_RequestForm>\n" +
+                    "         <ControlInfo>\n" +
+                    "            <INTF_ID></INTF_ID>\n" +
+                    "            <Src_System>OA</Src_System>\n" +
+                    "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
+                    "            <Company_Code></Company_Code>\n" +
+                    "            <Send_Time></Send_Time>\n" +
+                    "         </ControlInfo>\n" +
                     "         <ZKCYP>" + wlpzhm + "</ZKCYP>\n" +
                     "         <ZAPP01>Y</ZAPP01>\n" +
                     "      </erp:MT_RequestForm>\n" +
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
-            String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_RequestForm_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
+            writeLog(soapHttpRequest);
+            String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
             String username = utils.getUsername();
             String password = utils.getPassword();
-            String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, url, username, password);
+            String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, username, password);
+            writeLog(soapHttpResponse);
             MT_RequestForm_Msg msg = parse(soapHttpResponse);
             if (msg != null) {
                 if (msg.getMESSAGE_TYPE().equals("E")) {

@@ -24,7 +24,7 @@ public class OAwlxqjhAction extends BaseBean implements Action {
     private String company;
     private String department;
     public String execute(RequestInfo requestInfo) {
-        log("---->OAwlxqjhAction run");
+        writeLog("run");
         RequestManager requestManager = requestInfo.getRequestManager();
         String src = requestManager.getSrc();
         String[] ret_messages = new String[3];
@@ -33,27 +33,26 @@ public class OAwlxqjhAction extends BaseBean implements Action {
                 requestInfo.getRequestManager().setMessageid("Info");
                 requestInfo.getRequestManager().setMessagecontent("请配置Action 参数");
             } else {
-                log("<wlxqjh><company>" + this.getCompany());
-                log("<wlxqjh><department>" + this.getDepartment());
-                String wfid = requestInfo.getWorkflowid();
-                String requestid = requestInfo.getRequestid();
+                writeLog("<company>" + this.getCompany());
+                writeLog("<department>" + this.getDepartment());
+                String workflowId = requestInfo.getWorkflowid();
+                String requestId = requestInfo.getRequestid();
                 RecordSet recordSet = new RecordSet();
-                String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + wfid;
+                String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + workflowId;
                 recordSet.executeSql(sql);
                 recordSet.next();
                 String t = recordSet.getString("tablename");
-                sql = "select * from " + t + " where requestid=" + requestid;
+                sql = "select * from " + t + " where requestid=" + requestId;
                 recordSet.executeSql(sql);
                 if (recordSet.next()) {
                     int id = recordSet.getInt("id");
-                    String DEMANDPLAN_NO = requestid;
                     String MOVE_TYPE = getMVTYPE(Util.null2String(recordSet.getString("ydlx")));
                     String DEPARTMENT = getDepartmentName(recordSet.getInt("sqbm"));
                     String REQUISITOR = getLastName(recordSet.getInt("sqr"));
                     String WERKS = getCompanyCode(Util.null2String(recordSet.getString("gcbm")));
                     String KOSTL = Util.null2String(recordSet.getString("xqbm"));
                     String UMLGO = Util.null2String(recordSet.getString("jskcd1"));
-                    String AUFNR = Util.null2String(recordSet.getString("nbdd1"));
+                    String AUFNR = Util.null2String(recordSet.getString("nbdd2"));
                     String sqr = Util.null2String(recordSet.getString("sqr"));
 
                     String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\" xmlns:gdt=\"http://sap.com/xi/SAPGlobal/GDT\">\n" +
@@ -67,7 +66,7 @@ public class OAwlxqjhAction extends BaseBean implements Action {
                             "            <Company_Code></Company_Code>\n" +
                             "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
                             "         </ControlInfo>\n" +
-                            "         <DEMANDPLAN_NO>" + DEMANDPLAN_NO + "</DEMANDPLAN_NO>\n" +
+                            "         <DEMANDPLAN_NO>" + requestId + "</DEMANDPLAN_NO>\n" +
                             "         <MV_TYPE>" + MOVE_TYPE + "</MV_TYPE>\n" +
                             "         <GRUND></GRUND>\n" +
                             "         <DEPARTMENT>" + DEPARTMENT + "</DEPARTMENT>\n" +
@@ -83,22 +82,21 @@ public class OAwlxqjhAction extends BaseBean implements Action {
                             "      </erp:MT_DemandPlan>\n" +
                             "   </soapenv:Body>\n" +
                             "</soapenv:Envelope>";
-                    log(request);
+                    writeLog(request);
                     String username = utils.getUsername();
                     String password = utils.getPassword();
                     String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
                     String response = WSClientUtils.callWebService(request, endpoint, username, password);
-                    log("---->" + response);
+                    writeLog(response);
                     ret_messages = getRet_Messages(response);
                 }
-                if ("E".equals(ret_messages[0]) || "W".equals(ret_messages[0])) {
-                    requestInfo.getRequestManager().setMessageid("Returned Message");
+                if ("E".equals(ret_messages[0])) {
+                    requestInfo.getRequestManager().setMessageid("SAP返回信息");
                     requestInfo.getRequestManager().setMessagecontent(ret_messages[1]);
-                    return FAILURE_AND_CONTINUE;
                 } else {
-                    sql = "update " + t + " set ylh='" + ret_messages[2] + "' where requestid=" + requestid;
+                    sql = "update " + t + " set ylh='" + ret_messages[2] + "' where requestid=" + requestId;
                     recordSet.executeSql(sql);
-                    log("----<>" + sql);
+                    writeLog(sql);
                 }
             }
         }
@@ -192,11 +190,6 @@ public class OAwlxqjhAction extends BaseBean implements Action {
             e.printStackTrace();
         }
         return v;
-    }
-
-    private void log(Object o) {
-        writeLog(o);
-        System.out.println(o);
     }
 
     private String getCompanyCode(String id) {

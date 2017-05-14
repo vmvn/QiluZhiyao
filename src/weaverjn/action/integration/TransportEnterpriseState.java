@@ -29,10 +29,10 @@ public class TransportEnterpriseState extends BaseBean implements Action {
             sql = "select bh,zt from " + tableName + " where id=" + billId;
             recordSet.executeSql(sql);
             if (recordSet.next()) {
-                String bh = Util.null2String(recordSet.getString("bh"));
-                String zt = Util.null2String(recordSet.getString("zt"));
-
-                zt = zt.equals("1") ? "N" : "Y";
+                String cydwbh = Util.null2String(recordSet.getString("cydwbh"));
+//                String zt = Util.null2String(recordSet.getString("zt"));
+//
+//                zt = zt.equals("1") ? "N" : "Y";
 
                 String soapHttpRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                         "   <soapenv:Header/>\n" +
@@ -46,9 +46,9 @@ public class TransportEnterpriseState extends BaseBean implements Action {
                         "            <Send_Time></Send_Time>\n" +
                         "         </ControlInfo>\n" +
                         "         <Transport_Enterprise_State>\n" +
-                        "            <KUNNR>" + bh + "</KUNNR>\n" +
+                        "            <KUNNR>" + cydwbh + "</KUNNR>\n" +
                         "            <VKROG>" + this.getVKROG() + "</VKROG>\n" +
-                        "            <STATE>" + zt + "</STATE>\n" +
+                        "            <STATE>" + "Y" + "</STATE>\n" +
                         "         </Transport_Enterprise_State>\n" +
                         "      </erp:MT_Transport_Enterprise_State>\n" +
                         "   </soapenv:Body>\n" +

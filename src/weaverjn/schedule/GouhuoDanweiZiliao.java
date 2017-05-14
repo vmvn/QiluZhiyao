@@ -1,7 +1,6 @@
 package weaverjn.schedule;
 
 import weaver.conn.RecordSet;
-import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.schedule.BaseCronJob;
 import weaver.system.SysRemindWorkflow;

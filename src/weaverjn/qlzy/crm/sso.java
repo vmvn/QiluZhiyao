@@ -1,7 +1,6 @@
 package weaverjn.qlzy.crm;
 
 import weaver.general.MD5;
-import weaver.hrm.User;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

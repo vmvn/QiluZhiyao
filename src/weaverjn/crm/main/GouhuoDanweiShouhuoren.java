@@ -1,5 +1,6 @@
 package weaverjn.crm.main;
 
+import org.jetbrains.annotations.NotNull;
 import weaver.conn.RecordSet;
 import weaver.conn.RecordSetDataSource;
 import weaver.general.BaseBean;
@@ -169,6 +170,7 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
         return s.toString();
     }
 
+    @NotNull
     private String getSApMultiValue(String table, String field, String cField, String cValue) {
         String sql = "select " + field + " from " + table + " where " + cField + "='" + cValue + "'";
         RecordSet recordSet = new RecordSet();

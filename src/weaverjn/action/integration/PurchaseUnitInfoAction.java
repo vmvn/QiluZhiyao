@@ -23,8 +23,7 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
     @Override
     public String execute(RequestInfo requestInfo) {
         RequestManager requestManager = requestInfo.getRequestManager();
-        String src = requestManager.getSrc();
-        if (!src.equals("reject")) {
+        if (!Util.null2String(this.vkorg).isEmpty()) {
             Map<String, String> mainTableData = utils.getMainTableData(requestInfo.getMainTableInfo());
             String ghfmc = mainTableData.get("ghfmc");
             String sql = "select * from uf_wrghdwzl where id='" + ghfmc + "'";
@@ -46,52 +45,43 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
                         "         <zfddbr>" + utils.getFieldValue("hrmresource", "lastname", recordSet.getString("fddbr")) + "</zfddbr>\n" +
                         "         <VKORG>" + this.vkorg + "</VKORG>\n" +
                         "         <ZSTATE_HG>" + Util.null2String(recordSet.getString("ghdwzt")) + "</ZSTATE_HG>\n" +
-                        "         <ZYYZZ_YXQ>" + Util.null2String(recordSet.getString("zzjgyxqz")) + "</ZYYZZ_YXQ>\n" +
+                        "         <ZYYZZ_YXQ>" + Util.null2String(recordSet.getString("yyzzyxqz")) + "</ZYYZZ_YXQ>\n" +
+                        "         <ZYYZZZCH>" + Util.null2String(recordSet.getString("yyzzzch")) + "</ZYYZZZCH>\n" +
                         "         <ZXKZ_FZRQ>" + Util.null2String(recordSet.getString("xkzfzrq")) + "</ZXKZ_FZRQ>\n" +
-                        "         <ZYYZZ_FZRQ>" + Util.null2String(recordSet.getString("zzjgfzrq")) + "</ZYYZZ_FZRQ>\n" +
+                        "         <ZYYZZ_FZRQ>" + Util.null2String(recordSet.getString("yyzzfzrq")) + "</ZYYZZ_FZRQ>\n" +
                         "         <ZXKZ_MC>" + utils.getSelectName("26850", Util.null2String(recordSet.getString("xkzmclx"))) + "</ZXKZ_MC>\n" +
-                        "         <ZXKZ_YXQ>" + Util.null2String(recordSet.getString("xkzyxqz")) + "</ZXKZ_YXQ>\n";
-
-                StringBuilder jyfsXML = new StringBuilder();
-                String jyfw = Util.null2String(recordSet.getString("jyfw"));
-                if (!jyfw.isEmpty()) {
-                    String[] arr = jyfw.split(",");
-                    for (int i = 0; i < Math.min(20, arr.length); i++) {
-                        jyfsXML.append("         <ZJYFW").append(i + 1).append(">").append(getWRJYFSBH(arr[i])).append("</ZJYFW").append(i + 1).append(">\n");
-                    }
-                }
-                soapHttpRequest += jyfsXML.toString();
-                soapHttpRequest += "         <ZXKZ_BGJL>" + Util.null2String(recordSet.getString("bgjl")) + "</ZXKZ_BGJL>\n" +
-                        "         <ZCKDZ1></ZCKDZ1>\n" +
-                        "         <ZCKDZXQ1></ZCKDZXQ1>\n" +
-                        "         <ZCKDZ2></ZCKDZ2>\n" +
-                        "         <ZCKDZXQ2></ZCKDZXQ2>\n" +
-                        "         <ZCKDZ3></ZCKDZ3>\n" +
-                        "         <ZCKDZXQ3></ZCKDZXQ3>\n" +
-                        "         <ZCKDZ4></ZCKDZ4>\n" +
-                        "         <ZCKDZXQ4></ZCKDZXQ4>\n" +
-                        "         <ZCKDZ5></ZCKDZ5>\n" +
-                        "         <ZCKDZXQ5></ZCKDZXQ5>\n" +
-                        "         <ZCKDZ6></ZCKDZ6>\n" +
-                        "         <ZCKDZXQ6></ZCKDZXQ6>\n" +
-                        "         <ZCKDZ7></ZCKDZ7>\n" +
-                        "         <ZCKDZXQ7></ZCKDZXQ7>\n" +
-                        "         <ZCKDZ8></ZCKDZ8>\n" +
-                        "         <ZCKDZXQ8></ZCKDZXQ8>\n" +
-                        "         <ZCKDZ9></ZCKDZ9>\n" +
-                        "         <ZCKDZXQ9></ZCKDZXQ9>\n" +
-                        "         <ZCKDZ10></ZCKDZ10>\n" +
-                        "         <ZCKDZXQ10></ZCKDZXQ10>\n" +
+                        "         <ZXKZ_YXQ>" + Util.null2String(recordSet.getString("xkzyxqz")) + "</ZXKZ_YXQ>\n" +
+                        JYFW(ghfmc) +
+                        "         <ZXKZ_BGJL>" + Util.null2String(recordSet.getString("bgjl")) + "</ZXKZ_BGJL>\n" +
+                        CKDZ(ghfmc) +
                         "         <ZGSP_YXQ>" + Util.null2String(recordSet.getString("gspyxqz")) + "</ZGSP_YXQ>\n" +
                         "         <ZZBXY>" + utils.getSelectName("26864", Util.null2String(recordSet.getString("zlbzxys"))) + "</ZZBXY>\n" +
                         "         <ZZBXY_YXQ>" + Util.null2String(recordSet.getString("yxqz")) + "</ZZBXY_YXQ>\n" +
                         "         <ZZLBZTX>" + utils.getSelectName("26866", Util.null2String(recordSet.getString("zltxdcb"))) + "</ZZLBZTX>\n" +
                         "         <ZDTXQ>" + Util.null2String(recordSet.getString("dtyxq")) + "</ZDTXQ>\n" +
+                        "         <sale_view>\n" +
+                        "            <VKORG>" + this.vkorg + "</VKORG>\n" +
+                        "            <VTWEG>" + utils.getFieldValue("uf_wrfxqd", "fxqdbh", Util.null2String(recordSet.getString("fxqd"))) + "</VTWEG>\n" +
+                        "            <SPART>" + utils.getFieldValue("uf_sapjcsj_cpz", "cpzdm", Util.null2String(recordSet.getString("cpz"))) + "</SPART>\n" +
+                        "            <BZIRK>" + utils.getFieldValue("uf_wrxsqd", "xsqdbh", Util.null2String(recordSet.getString("xsqy"))) + "</BZIRK>\n" +
+                        "            <KONDA>" + Util.null2String(recordSet.getString("jgz")) + "</KONDA>\n" +
+                        "            <KALKS>" + Util.null2String(recordSet.getString("djgc")) + "</KALKS>\n" +
+                        "            <VWERK>" + utils.getFieldValue("uf_sapjcsj_gc", "gcbm", Util.null2String(recordSet.getString("jhgc"))) + "</VWERK>\n" +
+                        "            <VSBED>" + Util.null2String(recordSet.getString("zytj")) + "</VSBED>\n" +
+                        "            <INCO1>" + utils.getFieldValue("uf_wrgjmysyjstz", "gjmysyjstzbh", Util.null2String(recordSet.getString("gjmysyjstz"))) + "</INCO1>\n" +
+                        "            <INCO2_L>" + Util.null2String(recordSet.getString("gjmysyjstz1")) + "</INCO2_L>\n" +
+                        "            <ZTERM>" + utils.getFieldValue("uf_wrfktj", "fktjbh", Util.null2String(recordSet.getString("fktj"))) + "</ZTERM>\n" +
+                        "            <KTGRD>" + utils.getFieldValue("uf_wrzhfpz", "zhfpzbh", Util.null2String(recordSet.getString("zhfpz"))) + "</KTGRD>\n" +
+                        "            <AKONT>" + utils.getFieldValue("uf_wrtykm", "tykmbh", Util.null2String(recordSet.getString("tykm"))) + "</AKONT>\n" +
+                        "            <TAXKD></TAXKD>\n" +
+                        "         </sale_view>\n" +
                         "      </erp:MT_PurchaseUnitInfo>\n" +
                         "   </soapenv:Body>\n" +
                         "</soapenv:Envelope>";
-                String endpoint = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_PurchaseUnitInfo_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
+                writeLog(soapHttpRequest);
+                String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
                 String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, utils.getUsername(), utils.getPassword());
+                writeLog(soapHttpResponse);
                 MT_PurchaseUnitInfo_Msg msg = parse(soapHttpResponse);
                 if (msg != null) {
                     if (msg.getMESSAGE_TYPE().equals("E")) {
@@ -99,10 +89,14 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
                         requestManager.setMessagecontent(msg.getMESSAGE());
                     }
                 } else {
-                    requestManager.setMessageid("ERROR");
+                    requestManager.setMessageid("SAP 返回信息");
                     requestManager.setMessagecontent(soapHttpResponse);
                 }
             }
+        }else{
+            writeLog("vkorg is null");
+            requestManager.setMessageid("WARNING");
+            requestManager.setMessagecontent("vkorg is null");
         }
         return SUCCESS;
     }
@@ -122,15 +116,38 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
         return msg;
     }
 
-    private String getWRJYFSBH(String id) {
+    private String CKDZ(String id) {
+        String sql = "select * from uf_wrghdwzl_dt1 where mainid='" + id + "'";
         RecordSet recordSet = new RecordSet();
-        String sql = "select wrjyfsbh from uf_wrjyfs where id='" + id + "'";
         recordSet.executeSql(sql);
-        String wrjyfsbh = "";
-        if (recordSet.next()) {
-            wrjyfsbh = Util.null2String(recordSet.getString("wrjyfsbh"));
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 1;
+        while (recordSet.next()) {
+            stringBuilder.append("         <ZCKDZ").append(i).append(">").append(Util.null2String(recordSet.getString("ckdz"))).append("</ZCKDZ").append(i).append(">\n");
+            stringBuilder.append("         <ZCKDZXQ").append(i).append(">").append(Util.null2String(recordSet.getString("yxqz"))).append("</ZCKDZXQ").append(i).append(">\n");
+            i++;
         }
-        return wrjyfsbh;
+        for (; i <= 10; i++) {
+            stringBuilder.append("         <ZCKDZ").append(i).append(">").append("").append("</ZCKDZ").append(i).append(">\n");
+            stringBuilder.append("         <ZCKDZXQ").append(i).append(">").append("").append("</ZCKDZXQ").append(i).append(">\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    private String JYFW(String id) {
+        String sql = "select * from uf_wrghdwzl_dt2 where mainid='" + id + "'";
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 1;
+        while (recordSet.next()) {
+            stringBuilder.append("         <ZJYFW").append(i).append(">").append(Util.null2String(recordSet.getString("jyfw"))).append("</ZJYFW").append(i).append(">\n");
+            i++;
+        }
+        for (; i <= 20; i++) {
+            stringBuilder.append("         <ZJYFW").append(i).append(">").append("").append("</ZJYFW").append(i).append(">\n");
+        }
+        return stringBuilder.toString();
     }
 
     public String getVkorg() {

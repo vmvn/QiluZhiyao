@@ -24,22 +24,18 @@ public class I0043Action extends BaseBean implements Action {
     private String requestid;
     @Override
     public String execute(RequestInfo requestInfo) {
-        log("run");
+        writeLog("run");
         RequestManager requestManager = requestInfo.getRequestManager();
         String src = requestManager.getSrc();
         RET_MSG ret_msg = null;
         String message = "";
         if (!src.equals("reject")) {
-            String wfid = requestInfo.getWorkflowid();
-            String reqid = requestInfo.getRequestid();
-            this.setRequestid(reqid);
-            RecordSet recordSet = new RecordSet();
-            String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + wfid;
-            recordSet.executeSql(sql);
-            recordSet.next();
-            String t = recordSet.getString("tablename");
+            String requestId = requestInfo.getRequestid();
+            this.setRequestid(requestId);
+            String table = requestManager.getBillTableName();
 
-            sql = "select id,sqr from " + t + " where requestid=" + reqid;
+            RecordSet recordSet = new RecordSet();
+            String sql = "select id,sqr from " + table + " where requestid=" + requestId;
             recordSet.executeSql(sql);
             if (recordSet.next()) {
                 int id = recordSet.getInt("id");
@@ -57,17 +53,17 @@ public class I0043Action extends BaseBean implements Action {
                         "            <Send_Time></Send_Time>\n" +
                         "         </ControlInfo>\n" +
                         "         <!--1 or more repetitions:-->\n" +
-                        getLines(id, t) +
+                        getLines(id, table) +
                         "      </erp:MT_MAT_MDG_LIST>\n" +
                         "   </soapenv:Body>\n" +
                         "</soapenv:Envelope>";
-                log(request);
+                writeLog(request);
                 HashMap<String, String> httpHeaderParm = new HashMap<String, String>();
                 String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_Material_Mdg_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
                 httpHeaderParm.put("instId", "10062");
                 httpHeaderParm.put("repairType", "RP");
                 String response = WSClientUtils.callWebServiceWithHttpHeaderParm(request, url, httpHeaderParm);
-                log(response);
+                writeLog(response);
                 ret_msg = getRET_MSG(response);
                 message = response;
             }
@@ -181,12 +177,6 @@ public class I0043Action extends BaseBean implements Action {
             value1 = recordSet.getString(field1);
         }
         return value1;
-    }
-
-    private void log(Object o) {
-        String prefix = "<" + this.getClass().getName() + ">";
-        System.out.println(prefix + o);
-        writeLog(prefix + o);
     }
 
     public String getREQ_TYPE() {

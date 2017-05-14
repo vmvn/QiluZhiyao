@@ -61,8 +61,8 @@ public class QualityReviewAction extends BaseBean implements Action {
                     "      </erp:MT_QuantityReview>\n" +
                     "   </soapenv:Body>\n" +
                     "</soapenv:Envelope>";
-            String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_QuantityReview_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
-            String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, url, utils.getUsername(), utils.getPassword());
+            String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+            String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, utils.getUsername(), utils.getPassword());
             writeLog(soapHttpRequest);
             writeLog(soapHttpResponse);
         }

@@ -4,28 +4,47 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
+import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
-import weaverjn.utils.PropertiesUtil;
 import weaverjn.utils.WSClientUtils;
-
-import java.util.Map;
+import weaverjn.utils.PropertiesUtil;
 
 /**
- * Created by zhaiyaqi on 2017/4/24.
+ * Created by zhaiyaqi on 2017/5/5.
  */
-public class TransportEnterpriseStateAction extends BaseBean implements Action {
-    private String VKROG;
+public class NearlyEffectiveDrug extends BaseBean implements Action {
     @Override
     public String execute(RequestInfo requestInfo) {
         RequestManager requestManager = requestInfo.getRequestManager();
-        Map<String, String> mainTableData = utils.getMainTableData(requestInfo.getMainTableInfo());
+        String requestId = requestInfo.getRequestid();
+        String table = requestManager.getBillTableName();
+
+        String sql = "select id from " + table + " where requestid=" + requestId;
+        writeLog(sql);
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        recordSet.next();
+        String id = recordSet.getString("id");
+
+        sql = "select pzbh,ph,WERKS from " + table + "_dt1 where mainid=" + id;
+        recordSet.executeSql(sql);
+        StringBuilder DATA_List = new StringBuilder();
+        while (recordSet.next()) {
+            DATA_List.append("<DATA_List>\n");
+            DATA_List.append("<matnr>").append(Util.null2String(recordSet.getString("pzbh"))).append("</matnr>\n");
+            DATA_List.append("<werks>").append(Util.null2String(recordSet.getString("WERKS"))).append("</werks>\n");
+            DATA_List.append("<charg>").append(Util.null2String(recordSet.getString("ph"))).append("</charg>\n");
+            DATA_List.append("</DATA_List>\n");
+        }
+
         String soapHttpRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
-                "      <erp:MT_Transport_Enterprise_State>\n" +
+                "      <erp:MT_NearlyEffective_Drug>\n" +
                 "         <ControlInfo>\n" +
                 "            <INTF_ID></INTF_ID>\n" +
                 "            <Src_System>OA</Src_System>\n" +
@@ -33,12 +52,8 @@ public class TransportEnterpriseStateAction extends BaseBean implements Action {
                 "            <Company_Code></Company_Code>\n" +
                 "            <Send_Time></Send_Time>\n" +
                 "         </ControlInfo>\n" +
-                "         <Transport_Enterprise_State>\n" +
-                "            <KUNNR>" + mainTableData.get("cydwbh") + "</KUNNR>\n" +
-                "            <VKROG>" + this.getVKROG() + "</VKROG>\n" +
-                "            <STATE>Y</STATE>\n" +
-                "         </Transport_Enterprise_State>\n" +
-                "      </erp:MT_Transport_Enterprise_State>\n" +
+                DATA_List.toString() +
+                "      </erp:MT_NearlyEffective_Drug>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
         writeLog(soapHttpRequest);
@@ -47,60 +62,32 @@ public class TransportEnterpriseStateAction extends BaseBean implements Action {
         String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
         String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, username, password);
         writeLog(soapHttpResponse);
-        MT_Transport_State_Ret msg = parse(soapHttpResponse);
+        RET_MSG msg = parse(soapHttpResponse, "MT_NearlyEffective_Drug_Msg");
         if (msg != null) {
             if (msg.getMSG_TYPE().equals("E")) {
-                requestManager.setMessageid("error");
+                requestManager.setMessageid(msg.getMSG_TYPE());
                 requestManager.setMessagecontent(msg.getMESSAGE());
             }
         } else {
-            requestManager.setMessageid("error");
+            requestManager.setMessageid("E");
             requestManager.setMessagecontent(soapHttpResponse);
         }
         return SUCCESS;
     }
 
-    private MT_Transport_State_Ret parse(String response) {
-        MT_Transport_State_Ret msg = null;
-        try{
-            Document document = DocumentHelper.parseText(response);
-            Element root = document.getRootElement();
-            Element e = root.element("Body").element("MT_Transport_State_Ret");
-            msg = new MT_Transport_State_Ret();
-            msg.setMSG_TYPE(e.element("Ret_Msg").elementText("MSG_TYPE"));
-            msg.setMESSAGE(e.element("Ret_Msg").elementText("MESSAGE"));
+    private RET_MSG parse(String response, String qName) {
+        RET_MSG ret_msg = null;
+        Document dom;
+        try {
+            dom = DocumentHelper.parseText(response);
+            Element root = dom.getRootElement();
+            Element msg = root.element("Body").element(qName);
+            ret_msg = new RET_MSG();
+            ret_msg.setMSG_TYPE(msg.elementText("MESSAGE_TYPE"));
+            ret_msg.setMESSAGE(msg.elementText("MESSAGE"));
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        return msg;
-    }
-
-    class MT_Transport_State_Ret{
-        private String MSG_TYPE;
-        private String MESSAGE;
-
-        public String getMSG_TYPE() {
-            return MSG_TYPE;
-        }
-
-        public void setMSG_TYPE(String MSG_TYPE) {
-            this.MSG_TYPE = MSG_TYPE;
-        }
-
-        public String getMESSAGE() {
-            return MESSAGE;
-        }
-
-        public void setMESSAGE(String MESSAGE) {
-            this.MESSAGE = MESSAGE;
-        }
-    }
-
-    public String getVKROG() {
-        return VKROG;
-    }
-
-    public void setVKROG(String VKROG) {
-        this.VKROG = VKROG;
+        return ret_msg;
     }
 }
