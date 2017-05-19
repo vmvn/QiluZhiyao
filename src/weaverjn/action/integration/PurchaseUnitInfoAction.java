@@ -42,7 +42,8 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
                         "            <Send_Time></Send_Time>\n" +
                         "         </ControlInfo>\n" +
                         "         <kunnr>" + Util.null2String(recordSet.getString("ghfbh")) + "</kunnr>\n" +
-                        "         <zfddbr>" + utils.getFieldValue("hrmresource", "lastname", recordSet.getString("fddbr")) + "</zfddbr>\n" +
+//                        "         <zfddbr>" + utils.getFieldValue("hrmresource", "lastname", recordSet.getString("fddbr")) + "</zfddbr>\n" +
+                        "         <zfddbr>" + Util.null2String(recordSet.getString("fddbr")) + "</zfddbr>\n" +
                         "         <VKORG>" + this.vkorg + "</VKORG>\n" +
                         "         <ZSTATE_HG>" + Util.null2String(recordSet.getString("ghdwzt")) + "</ZSTATE_HG>\n" +
                         "         <ZYYZZ_YXQ>" + Util.null2String(recordSet.getString("yyzzyxqz")) + "</ZYYZZ_YXQ>\n" +
@@ -63,6 +64,7 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
                         "            <VKORG>" + this.vkorg + "</VKORG>\n" +
                         "            <VTWEG>" + utils.getFieldValue("uf_wrfxqd", "fxqdbh", Util.null2String(recordSet.getString("fxqd"))) + "</VTWEG>\n" +
                         "            <SPART>" + utils.getFieldValue("uf_sapjcsj_cpz", "cpzdm", Util.null2String(recordSet.getString("cpz"))) + "</SPART>\n" +
+                        "            <bukrs>1620</bukrs>\n" +
                         "            <BZIRK>" + utils.getFieldValue("uf_wrxsqd", "xsqdbh", Util.null2String(recordSet.getString("xsqy"))) + "</BZIRK>\n" +
                         "            <KONDA>" + Util.null2String(recordSet.getString("jgz")) + "</KONDA>\n" +
                         "            <KALKS>" + Util.null2String(recordSet.getString("djgc")) + "</KALKS>\n" +
@@ -78,6 +80,7 @@ public class PurchaseUnitInfoAction extends BaseBean implements Action {
                         "      </erp:MT_PurchaseUnitInfo>\n" +
                         "   </soapenv:Body>\n" +
                         "</soapenv:Envelope>";
+
                 writeLog(soapHttpRequest);
                 String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
                 String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, utils.getUsername(), utils.getPassword());

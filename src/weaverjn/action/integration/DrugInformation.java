@@ -147,4 +147,3 @@ public class DrugInformation extends BaseBean implements Action  {
         return ret_msg;
     }
 }
-	
