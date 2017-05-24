@@ -27,7 +27,7 @@ public class SupplierReviewAction extends BaseBean implements Action {
             String requestId = requestInfo.getRequestid();
             String t = utils.getTableName(workflowId);//主表表名
 
-            String sql = "select bh,cgzz from " + t + " where requestid=" + requestId;
+            String sql = "select gysbh,cgzz from " + t + " where requestid=" + requestId;
             RecordSet recordSet = new RecordSet();
             recordSet.executeSql(sql);
             recordSet.next();
@@ -42,7 +42,7 @@ public class SupplierReviewAction extends BaseBean implements Action {
                     "            <Company_Code></Company_Code>\n" +
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
-                    "         <lifnr>" + Util.null2String(recordSet.getString("bh")) + "</lifnr>\n" +
+                    "         <lifnr>" + Util.null2String(recordSet.getString("gysbh")) + "</lifnr>\n" +
 //                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
                     "         <ekorg>" + this.ekorg + "</ekorg>\n" +
                     "         <status>Y</status>\n" +
@@ -56,7 +56,7 @@ public class SupplierReviewAction extends BaseBean implements Action {
             MT_SupplierReview_Msg msg = parse(response);
             if (msg != null) {
                 if (!msg.getMSG_TYPE().equals("S")) {
-                    requestManager.setMessageid(msg.getMSG_TYPE());
+                    requestManager.setMessageid("SAP返回信息");
                     requestManager.setMessagecontent(msg.getMESSAGE());
                 }
             } else {

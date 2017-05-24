@@ -21,6 +21,7 @@ import java.util.Map;
  * 2017年4月18日 上午10:10:12
  */
 public class MaterialQualification extends BaseBean implements Action  {
+	private String uf;
 	@Override
 	public String execute(RequestInfo requestInfo) {
 		Map<String, String> mainTableData = utils.getMainTableData(requestInfo.getMainTableInfo());
@@ -53,7 +54,7 @@ public class MaterialQualification extends BaseBean implements Action  {
             requestInfo.getRequestManager().setMessagecontent(response);
         } else {
             if (ret_msg.getMSG_TYPE().equals("E")) {
-                requestInfo.getRequestManager().setMessageid("Error Message");
+                requestInfo.getRequestManager().setMessageid("sap 返回信息");
                 requestInfo.getRequestManager().setMessagecontent(ret_msg.getMESSAGE());
             }
         }
@@ -63,7 +64,7 @@ public class MaterialQualification extends BaseBean implements Action  {
 	private String getLine(String ypmc) {
 		StringBuilder stringBuilder = new StringBuilder();
 		RecordSet recordSet = new RecordSet();
-		String sql = "select * from uf_sdwrypzl where id='" + ypmc + "'";
+		String sql = "select * from "+getUf()+" where id='" + ypmc + "'";
 		recordSet.executeSql(sql);
 		if (recordSet.next()) {
 			stringBuilder.append("<Mater_Qual>\n")
@@ -93,4 +94,12 @@ public class MaterialQualification extends BaseBean implements Action  {
         }
         return ret_msg;
     }
+
+	public String getUf() {
+		return uf;
+	}
+
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
 }

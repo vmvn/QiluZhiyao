@@ -20,6 +20,10 @@ public class SupplierQualification extends BaseBean implements Action  {
 	private String p1;
 	private String p2;
 	private String _dt;
+	// uf_ghdzl
+	private String uf1;
+	//uf_sdwrghdwxsyzl
+	private String uf2;
 
 	@Override
 	public String execute(RequestInfo requestInfo) {
@@ -32,10 +36,10 @@ public class SupplierQualification extends BaseBean implements Action  {
 
 			String LIFNR;
 			if (this.getP1().equals("1")) {
-				LIFNR = utils.getFieldValue("uf_ghdzl", "ghdwbm", mainTableData.get(Util.null2String(this.getP2()).equals("") ? "ghfmc" : this.getP2()));//供应商编码
+				LIFNR = utils.getFieldValue(uf1, "ghdwbm", mainTableData.get(Util.null2String(this.getP2()).equals("") ? "ghfmc" : this.getP2()));//供应商编码
 			} else {
 				writeLog("p2 " + this.getP2());
-				LIFNR = utils.getFieldValue("uf_sdwrghdwxsyzl", "bwtrbh", mainTableData.get(Util.null2String(this.getP2()).equals("") ? "bwtrxm" : this.getP2()));//供应商编码
+				LIFNR = utils.getFieldValue(uf2, "bwtrbh", mainTableData.get(Util.null2String(this.getP2()).equals("") ? "bwtrxm" : this.getP2()));//供应商编码
 			}
 			String id = utils.getFieldValue(table, "id", "requestid", requestId);
 
@@ -169,5 +173,21 @@ public class SupplierQualification extends BaseBean implements Action  {
 
 	public void set_dt(String _dt) {
 		this._dt = _dt;
+	}
+
+	public String getUf1() {
+		return uf1;
+	}
+
+	public void setUf1(String uf1) {
+		this.uf1 = uf1;
+	}
+
+	public String getUf2() {
+		return uf2;
+	}
+
+	public void setUf2(String uf2) {
+		this.uf2 = uf2;
 	}
 }

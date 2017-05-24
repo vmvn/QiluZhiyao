@@ -32,7 +32,7 @@ public class JnUtils {
 
 	
 	/**
-	 * 获得下拉框对应的selectname值
+	 * 废弃，直接返回获得的value值,需改用getFieldValue方法
 	 * <br/>2017年4月21日 上午9:41:27<br/>
 	 * @param table 对应表名
 	 * @param key 列的key  jx

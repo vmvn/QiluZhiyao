@@ -4,7 +4,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import weaver.conn.RecordSet;
 import weaver.general.BaseBean;
+import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 import weaver.workflow.request.RequestManager;
@@ -18,10 +21,16 @@ import java.util.Map;
  */
 public class TransportEnterpriseStateAction extends BaseBean implements Action {
     private String VKROG;
+    private String uf;
     @Override
     public String execute(RequestInfo requestInfo) {
         RequestManager requestManager = requestInfo.getRequestManager();
-        Map<String, String> mainTableData = utils.getMainTableData(requestInfo.getMainTableInfo());
+        Map<String, String> map = utils.getMainTableData(requestInfo.getMainTableInfo());
+        RecordSet rs = new RecordSet();
+        String sql = "select cydwbh from " + uf + " where id='"+map.get("cydwmc")+"'";
+        writeLog("查询运输单位的sql： " + sql);
+        rs.executeSql(sql);
+        rs.next();
         String soapHttpRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                 "   <soapenv:Header/>\n" +
                 "   <soapenv:Body>\n" +
@@ -34,23 +43,23 @@ public class TransportEnterpriseStateAction extends BaseBean implements Action {
                 "            <Send_Time></Send_Time>\n" +
                 "         </ControlInfo>\n" +
                 "         <Transport_Enterprise_State>\n" +
-                "            <KUNNR>" + mainTableData.get("cydwbh") + "</KUNNR>\n" +
+                "            <KUNNR>" + Util.null2String(rs.getString("cydwbh")) + "</KUNNR>\n" +
                 "            <VKROG>" + this.getVKROG() + "</VKROG>\n" +
                 "            <STATE>Y</STATE>\n" +
                 "         </Transport_Enterprise_State>\n" +
                 "      </erp:MT_Transport_Enterprise_State>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
-        writeLog(soapHttpRequest);
+        writeLog("请求sap内容：" + soapHttpRequest);
         String username = utils.getUsername();
         String password = utils.getPassword();
         String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
         String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, endpoint, username, password);
-        writeLog(soapHttpResponse);
+        writeLog("sap返回信息：" + soapHttpResponse);
         MT_Transport_State_Ret msg = parse(soapHttpResponse);
         if (msg != null) {
             if (msg.getMSG_TYPE().equals("E")) {
-                requestManager.setMessageid("error");
+                requestManager.setMessageid("sap 返回信息");
                 requestManager.setMessagecontent(msg.getMESSAGE());
             }
         } else {

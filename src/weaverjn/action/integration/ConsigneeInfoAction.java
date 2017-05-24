@@ -1,18 +1,24 @@
 package weaverjn.action.integration;
 
+import java.util.Calendar;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import weaver.conn.RecordSet;
+import weaver.conn.RecordSetDataSource;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
+import weaverjn.schedule.JnUtil;
 import weaverjn.utils.WSClientUtils;
 
 /**
- * Created by zhaiyaqi on 2017/4/1.
+ * 收货人基础资料：将收货人编号为空传给SAP，接收SAP返回值，并传给CRM
+ * @author songqi
+ * @tel 13256247773
+ * 2017年5月23日 下午3:44:32
  */
 public class ConsigneeInfoAction extends BaseBean implements Action {
     private String vkorg;
@@ -21,14 +27,16 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
         String billId = requestInfo.getRequestid();
         String moduleId = requestInfo.getWorkflowid();
         String sql = "select b.tablename,b.id from modeinfo a,workflow_bill b where a.formid = b.id and a.id = " + moduleId;
-        RecordSet recordSet = new RecordSet();
-        recordSet.executeSql(sql);
-        if (recordSet.next()) {
-            String t = recordSet.getString("tablename");
+        RecordSet rs = new RecordSet();
+        rs.executeSql(sql);
+        if (rs.next()) {
+            String t = rs.getString("tablename");
             sql = "select * from " + t + " where id=" + billId;
-            recordSet.executeSql(sql);
-
-            String soapHttpRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
+            writeLog("收货人查询sql： " + sql);
+            rs.executeSql(sql);
+            rs.next();
+            String sfzh = Util.null2String(rs.getString("shrsfz"));
+            String soapRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                     "   <soapenv:Header/>\n" +
                     "   <soapenv:Body>\n" +
                     "      <erp:MT_ConsigneeInfo>\n" +
@@ -40,18 +48,19 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
                     "         <VKORG>" + this.vkorg + "</VKORG>\n" +
-                    "         <KUNNR>" + Util.null2String(recordSet.getString("ghdwbh")) + "</KUNNR>\n" +
-                    "         <ZSQ_BGN>" + Util.null2String(recordSet.getString("sqqrq")) + "</ZSQ_BGN>\n" +
-                    "         <ZSQ_END>" + Util.null2String(recordSet.getString("sqzrq")) + "</ZSQ_END>\n" +
-                    "         <ZSHR_SFZ>" + Util.null2String(recordSet.getString("shrsfz")) + "</ZSHR_SFZ>\n" +
-                    "         <ZSFZ_YXQ>" + Util.null2String(recordSet.getString("sfzyxq")) + "</ZSFZ_YXQ>\n" +
-                    "         <ZGHDWGZ>" + (Util.null2String(recordSet.getString(" ywghdw")).equals("0") ? "Y" : "N") + "</ZGHDWGZ>\n" +
-                    "         <ZJSHYJ>" + (Util.null2String(recordSet.getString(" hwjsh")).equals("0") ? "Y" : "N") + "</ZJSHYJ>\n" +
-                    "         <ZSFZFYJ>" + (Util.null2String(recordSet.getString(" ywsfzfyj")).equals("0") ? "Y" : "N") + "</ZSFZFYJ>\n" +
-                    "         <ZFYJGZ>" + (Util.null2String(recordSet.getString(" sfzfyj")).equals("0") ? "Y" : "N") + "</ZFYJGZ>\n" +
-                    "         <NAME_LAST></NAME_LAST>\n" +
+                    "         <KUNNR>" + Util.null2String(rs.getString("ghdwbh")) + "</KUNNR>\n" +
+                    "         <ZSHR_BM></ZSHR_BM>\n" +
+                    "         <ZSQ_BGN>" + Util.null2String(rs.getString("sqqrq")) + "</ZSQ_BGN>\n" +
+                    "         <ZSQ_END>" + Util.null2String(rs.getString("sqzrq")) + "</ZSQ_END>\n" +
+                    "         <ZSHR_SFZ>" + sfzh + "</ZSHR_SFZ>\n" +
+                    "         <ZSFZ_YXQ>" + Util.null2String(rs.getString("sfzyxq")) + "</ZSFZ_YXQ>\n" +
+                    "         <ZGHDWGZ>" + (Util.null2String(rs.getString("ywghdw")).equals("0") ? "Y" : "N") + "</ZGHDWGZ>\n" +
+                    "         <ZJSHYJ>" + (Util.null2String(rs.getString("hwjsh")).equals("0") ? "Y" : "N") + "</ZJSHYJ>\n" +
+                    "         <ZSFZFYJ>" + (Util.null2String(rs.getString("ywsfzfyj")).equals("0") ? "Y" : "N") + "</ZSFZFYJ>\n" +
+                    "         <ZFYJGZ>" + (Util.null2String(rs.getString("sfzfyj")).equals("0") ? "Y" : "N") + "</ZFYJGZ>\n" +
+                    "         <NAME_LAST>"+Util.null2String(rs.getString("shrxm"))+"</NAME_LAST>\n" +
                     "         <PSTLZ></PSTLZ>\n" +
-                    "         <ORT01>" + Util.null2String(recordSet.getString("sqqy")) + "</ORT01>\n" +
+                    "         <ORT01>" + Util.null2String(rs.getString("sqqy")) + "</ORT01>\n" +
                     "         <LAND1>CN</LAND1>\n" +
                     "      </erp:MT_ConsigneeInfo>\n" +
                     "   </soapenv:Body>\n" +
@@ -59,18 +68,34 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
             String url = "http://podev.qilu-pharma.com:50000/XISOAPAdapter/MessageServlet?senderParty=&senderService=BS_OADEV&receiverParty=&receiverService=&interface=SI_ConsigneeInfo_Out&interfaceNamespace=http://qilu-pharma.com.cn/ERP01/";
             String username = "zappluser_oa";
             String password = "a1234567";
-            String soapHttpResponse = WSClientUtils.callWebService(soapHttpRequest, url, username, password);
-            MT_ConsigneeInfo_Msg msg = parse(soapHttpResponse);
+            writeLog("收货人请求sap地址： " + soapRequest);
+            String soapResponse = WSClientUtils.callWebService(soapRequest, url, username, password);
+            writeLog("收货人sap返回信息： " + soapResponse);
+            MT_ConsigneeInfo_Msg msg = parse(soapResponse);
             String reg_msg = "";
             if (msg != null) {
                 reg_msg += msg.getMESSAGE_TYPE();
-                reg_msg += "\n" + msg.getMESSAGE();
-                sql = "update " + t + " set reg_msg='" + reg_msg + "' shrbh='" + msg.getZSHR_BM() + "' where id=" + billId;
+                reg_msg += "        " + msg.getMESSAGE();
+                sql = "update " + t + " set ret_msg='" + reg_msg + "', shrbh='" + msg.getZSHR_BM() + "' where id=" + billId;
             } else {
-                reg_msg += soapHttpResponse;
-                sql = "update " + t + " set reg_msg='" + reg_msg + "' where id=" + billId;
+                reg_msg += soapResponse;
+                sql = "update " + t + " set ret_msg='" + reg_msg + "' where id=" + billId;
             }
-            recordSet.executeSql(sql);
+            writeLog("修改收货人编号信息的sql：" + sql);
+            rs.executeSql(sql);
+            RecordSetDataSource rsds = new RecordSetDataSource("crm_db");
+            String datetime = JnUtil.date2String(Calendar.getInstance().getTime());
+        	datetime = datetime.replace("-", "");
+        	datetime += " 00:00:00";
+        	String date = datetime.substring(0,8);
+            String sql2 = "update YXOASHR set YXOASHR_BGRQ='"+date+"',YXOASHR_BGSJ='"+datetime+"',YXOASHR_SHRBH='"+msg.getZSHR_BM()+"' where YXOASHR_SFZH='"+sfzh+"'";
+            writeLog("修改收货人CRM记录sql： " + sql2);
+            boolean f = rsds.execute(sql2);
+            if(f){
+            	writeLog("修改CRM收货人记录成功！");
+            }else{
+            	writeLog("修改CRM收货人记录失败！");
+            }
         }
         return SUCCESS;
     }

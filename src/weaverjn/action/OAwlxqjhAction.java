@@ -122,6 +122,9 @@ public class OAwlxqjhAction extends BaseBean implements Action {
         if (recordSet.next()) {
             departmentname = recordSet.getString("departmentname");
         }
+        if (departmentname.length() > 12) {
+            departmentname = departmentname.substring(0, 12);
+        }
         return departmentname;
     }
 

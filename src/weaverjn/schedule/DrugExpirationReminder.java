@@ -53,7 +53,7 @@ public class DrugExpirationReminder extends BaseCronJob {
         JCO.Table T_JXQ = funGetList.getTableParameterList().getTable("T_JXQ");
 
         System.out.println(T_JXQ.getNumRows());
-        for (int i = 0; i < T_JXQ.getNumRows(); i++) {
+        /*for (int i = 0; i < T_JXQ.getNumRows(); i++) {
             T_JXQ.setRow(i);
             String MATNR = T_JXQ.getString("MATNR");//编号
             String ZTYMC = T_JXQ.getString("ZTYMC");//产品名称
@@ -86,7 +86,7 @@ public class DrugExpirationReminder extends BaseCronJob {
                         T_JXQ.getString("CLABS") + ";";
                 logger(log);
             }
-        }
+        }*/
     }
 
     /*private boolean compare(Calendar today, Calendar c1, int n) {
