@@ -20,10 +20,8 @@ public class SupplierQualification extends BaseBean implements Action  {
 	private String p1;
 	private String p2;
 	private String _dt;
-	// uf_ghdzl
-	private String uf1;
-	//uf_sdwrghdwxsyzl
-	private String uf2;
+	private String uf1;//uf_ghdzl
+	private String uf2;//uf_sdwrghdwxsyzl
 
 	@Override
 	public String execute(RequestInfo requestInfo) {

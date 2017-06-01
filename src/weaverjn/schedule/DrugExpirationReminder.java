@@ -2,6 +2,7 @@ package weaverjn.schedule;
 
 import com.sap.mw.jco.IFunctionTemplate;
 import com.sap.mw.jco.JCO;
+import weaver.conn.RecordSet;
 import weaver.interfaces.schedule.BaseCronJob;
 import weaverjn.action.integration.utils;
 import weaverjn.utils.Workflow;
@@ -21,19 +22,36 @@ public class DrugExpirationReminder extends BaseCronJob {
     }
 
     public void execute() {
-        reminder("1620","3110");//万润
-//        reminder("","","");//万和
-//        reminder("","","");//鲁海
+        reminder("1620","3111");//万润108,3110;81,3118;
+        reminder("1610","3165");//万和108,3219;81,3148;
+        reminder("1630","3160");//鲁海108,3246;81,3081;
     }
 
     private Properties getLogonProperties() {
         Properties properties = new Properties();
-        properties.put("jco.client.ashost", "192.168.95.20"); // 系统的IP地址
-        properties.put("jco.client.client", "310"); // 要登录的客户端
-        properties.put("jco.client.sysnr", "00"); // 系统编号
-        properties.put("jco.client.langu", "ZH"); // 系统语言
-        properties.put("jco.client.user", "qilu-abap03"); // 登录用户名
-        properties.put("jco.client.passwd", "lvdx2019"); // 用户登录口令
+        String sql = "select hostname,client,systemnum,language,username,password from sap_datasource";
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        recordSet.next();
+        String ashost = recordSet.getString("hostname");
+        String client = recordSet.getString("client");
+        String sysnr = recordSet.getString("systemnum");
+        String langu = recordSet.getString("language");
+        String user = recordSet.getString("username");
+        String passwd = recordSet.getString("password");
+//        properties.put("jco.client.ashost", "192.168.95.20"); // 系统的IP地址
+//        properties.put("jco.client.client", "310"); // 要登录的客户端
+//        properties.put("jco.client.sysnr", "00"); // 系统编号
+//        properties.put("jco.client.langu", "ZH"); // 系统语言
+//        properties.put("jco.client.user", "qilu-abap03"); // 登录用户名
+//        properties.put("jco.client.passwd", "lvdx2019"); // 用户登录口令
+
+        properties.put("jco.client.ashost", ashost); // 系统的IP地址
+        properties.put("jco.client.client", client); // 要登录的客户端
+        properties.put("jco.client.sysnr", sysnr); // 系统编号
+        properties.put("jco.client.langu", langu); // 系统语言
+        properties.put("jco.client.user", user); // 登录用户名
+        properties.put("jco.client.passwd", passwd); // 用户登录口令
         return properties;
     }
 
@@ -53,7 +71,7 @@ public class DrugExpirationReminder extends BaseCronJob {
         JCO.Table T_JXQ = funGetList.getTableParameterList().getTable("T_JXQ");
 
         System.out.println(T_JXQ.getNumRows());
-        /*for (int i = 0; i < T_JXQ.getNumRows(); i++) {
+        for (int i = 0; i < T_JXQ.getNumRows(); i++) {
             T_JXQ.setRow(i);
             String MATNR = T_JXQ.getString("MATNR");//编号
             String ZTYMC = T_JXQ.getString("ZTYMC");//产品名称
@@ -86,7 +104,7 @@ public class DrugExpirationReminder extends BaseCronJob {
                         T_JXQ.getString("CLABS") + ";";
                 logger(log);
             }
-        }*/
+        }
     }
 
     /*private boolean compare(Calendar today, Calendar c1, int n) {

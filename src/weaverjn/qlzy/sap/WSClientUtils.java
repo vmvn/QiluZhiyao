@@ -39,11 +39,11 @@ public class WSClientUtils {
             // 设置读数据超时时间(单位毫秒)
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";;" + serviceEpr);
-            }
-
             String soapRequestData = postMethod.getResponseBodyAsString();
+            if (statusCode != HttpStatus.SC_OK) {
+//                throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";;" + serviceEpr);
+                soapRequestData = "SAP接口报错";
+            }
             return soapRequestData;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -64,15 +64,6 @@ public class WSClientUtils {
         return callWebService(soapRequest, serviceEpr, "application/soap+xml; charset=utf-8", httpHeaderParm);
     }
 
-
-    /**
-     * 给http Header传入参数：
-     * @param soapRequest
-     * @param serviceEpr
-     * @param contentType
-     * @param repairID
-     * @return
-     */
     public static String callWebService(String soapRequest, String serviceEpr, String contentType, HashMap<String, String> httpHeaderParm) {
 
         PostMethod postMethod = new PostMethod(serviceEpr);
@@ -107,12 +98,11 @@ public class WSClientUtils {
             // 设置读数据超时时间(单位毫秒)
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                System.out.println("----<>status code" + statusCode);
-                throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";" + serviceEpr + ";" + soapRequest);
-            }
-
             String soapRequestData = postMethod.getResponseBodyAsString();
+            if (statusCode != HttpStatus.SC_OK) {
+//                throw new IllegalStateException("调用webservice错误 : " + postMethod.getStatusLine() + ";" + statusCode + ";" + serviceEpr + ";" + soapRequest);
+                soapRequestData = "SAP 接口报错";
+            }
             return soapRequestData;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

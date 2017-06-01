@@ -2,7 +2,7 @@ package weaverjn.schedule;
 
 import java.util.Date;
 
-import com.weaver.TestInit;
+//import com.weaver.TestInit;
 
 import weaver.conn.RecordSet;
 import weaver.general.Util;
@@ -27,7 +27,7 @@ public class DrugFile extends BaseCronJob{
 	}
 
 	public static void main(String[] args) {
-		TestInit.init();
+//		TestInit.init();
 //		DrugFile sf = new DrugFile();
 //		sf.workflowRemind("biaoti", 1453+"", "neirong");
 		System.out.println(">>>>>ok： " + DrugFile.class.getSimpleName());

@@ -75,7 +75,7 @@ public class DrugInformation extends BaseBean implements Action  {
 			stringBuilder.append("<matnr>").append(Util.null2String(recordSet.getString("ypbh"))).append("</matnr>");
 			stringBuilder.append("<ZMAKTX_GYM>").append(Util.null2String(recordSet.getString("gym"))).append("</ZMAKTX_GYM>");
 			stringBuilder.append("<ZMAKTX_SPM>").append(Util.null2String(recordSet.getString("spbm"))).append("</ZMAKTX_SPM>");
-			stringBuilder.append("<ZCPJIX>").append(utils.getSelectName("26605", recordSet.getString("jx"))).append("</ZCPJIX>");
+			stringBuilder.append("<ZCPJIX>").append(getJx(recordSet.getString("jx"))).append("</ZCPJIX>");
 			stringBuilder.append("<ZBZGG>").append(Util.null2String(recordSet.getString("bzgg"))).append("</ZBZGG>");
 			stringBuilder.append("<ZSCQY>").append(Util.null2String(recordSet.getString("scqy"))).append("</ZSCQY>");
 			stringBuilder.append("<ZZCSB>").append(Util.null2String(recordSet.getString("zcsb"))).append("</ZZCSB>");
@@ -148,9 +148,24 @@ public class DrugInformation extends BaseBean implements Action  {
 //			jyfw = "," + Util.null2String(recordSet.getString("jyfwbh"));
 //		}
 //		jyfw = jyfw.substring(1);
+
+	public DrugInformation() {
+		super();
+	}
 //		return jyfw;
 //	}
 	
+	private String getJx(String jx){
+		String name = "";
+		RecordSet rs = new RecordSet();
+		String sql = "select selectname from workflow_selectitem where (selectvalue='"+jx+"' and fieldid = (select id from workflow_billfield where fieldname='jx' and billid=(select id from workflow_bill where tablename='"+getUf()+"')))";
+		rs.executeSql(sql);
+		if(rs.next()){
+			name = Util.null2String(rs.getString(1));
+		}
+		return name;
+	}
+
 	private RET_MSG getRET_MSG(String s) {
 		RET_MSG ret_msg = null;
 		Document dom;

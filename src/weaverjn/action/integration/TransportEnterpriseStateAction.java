@@ -27,7 +27,7 @@ public class TransportEnterpriseStateAction extends BaseBean implements Action {
         RequestManager requestManager = requestInfo.getRequestManager();
         Map<String, String> map = utils.getMainTableData(requestInfo.getMainTableInfo());
         RecordSet rs = new RecordSet();
-        String sql = "select cydwbh from " + uf + " where id='"+map.get("cydwmc")+"'";
+        String sql = "select cydwbh from " + this.getUf() + " where id='" + map.get("cydwmc") + "'";
         writeLog("查询运输单位的sql： " + sql);
         rs.executeSql(sql);
         rs.next();
@@ -82,6 +82,14 @@ public class TransportEnterpriseStateAction extends BaseBean implements Action {
             e.printStackTrace();
         }
         return msg;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
+
+    public String getUf() {
+        return uf;
     }
 
     class MT_Transport_State_Ret{

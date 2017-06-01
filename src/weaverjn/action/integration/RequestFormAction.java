@@ -58,11 +58,11 @@ public class RequestFormAction extends BaseBean implements Action{
             MT_RequestForm_Msg msg = parse(soapHttpResponse);
             if (msg != null) {
                 if (msg.getMESSAGE_TYPE().equals("E")) {
-                    requestManager.setMessageid(msg.getMESSAGE_TYPE());
+                    requestManager.setMessageid("SAP Response Message");
                     requestManager.setMessagecontent(msg.getMESSAGE());
                 }
             } else {
-                requestManager.setMessageid("E");
+                requestManager.setMessageid("SAP Response Message");
                 requestManager.setMessagecontent(soapHttpResponse);
             }
         }

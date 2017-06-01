@@ -2,7 +2,7 @@ package weaverjn.schedule;
 
 import java.util.Date;
 
-import com.weaver.TestInit;
+//import com.weaver.TestInit;
 
 import weaver.conn.RecordSet;
 import weaver.general.Util;
@@ -20,14 +20,12 @@ import weaverjn.utils.PropertiesUtil;
 public class SupplierFile extends BaseCronJob{
 
 	private String LIFNR_TYPE = "";
-	private String EKORG = "1620";
 	private String LIFNR = "";
 	private String SPERM = "";
 	private String DATE_BEG = "";
 	private String DATE_END = "";
 	private String SCPOE_ID = "";
 	private String MATNR = "";
-	private String uf = "uf_ghdzl";
 	private static String className = SupplierFile.class.getName();
 	@Override
 	public void execute() {
@@ -37,11 +35,11 @@ public class SupplierFile extends BaseCronJob{
 		
 	}
 
-	public static void main(String[] args) {
-		TestInit.init();
-		SupplierFile sf = new SupplierFile();
-		sf.doit();
-	}
+//	public static void main(String[] args) {
+//		TestInit.init();
+//		SupplierFile sf = new SupplierFile();
+//		sf.doit();
+//	}
 	
 	private void doit() {
 //		String date = JnUtil.date2String(new Date());
@@ -50,35 +48,33 @@ public class SupplierFile extends BaseCronJob{
 
 	private void remind(Date date) {
 		RecordSet rs = new RecordSet();
-		//许可证有效期至 yxqz 认证证书有效期至 yxqz1 质保协议有效期至 yxqz2
-		String endtime = JnUtil.date2String(date);
-		String sql = "select id,zdr,yxqz,yxqz1,yxqz2 from " + uf + " "
-				+ "where yxqz < '"+endtime+"' or yxqz1 < '"+endtime+"' or yxqz2 < '"+endtime+"' ";
-
-		JnUtil.writeLog(className, "查询所有供应商的sql： " + sql);
-		rs.executeSql(sql);
-		while(rs.next()){
-			String xkz = "",rzzs = "",zbxy = "",id = "";
-			id = Util.null2String(rs.getString("id"));
-//			xkz = Util.null2String(rs.getString("yxqz"));
-//			rzzs = Util.null2String(rs.getString("yxqz1"));
-//			zbxy = Util.null2String(rs.getString("yxqz2"));
-//			if(xkz.equals("") || rzzs.equals("") || zbxy.equals(""))
-//				continue;
-//			Date xkz_d = JnUtil.string2Date(xkz);
-//			Date rzzs_d = JnUtil.string2Date(rzzs);
-//			Date zbxy_d = JnUtil.string2Date(zbxy);
-			// 状态更新
-//			long c1 = JnUtil.calculateTime(date, xkz_d);
-//			long c2 = JnUtil.calculateTime(date, rzzs_d);
-//			long c3 = JnUtil.calculateTime(date, zbxy_d);
-//			if (c1 > 0 || c2 > 0 || c3 > 0) {
-				updateStatus(id);
-//			}
+		// wr 
+		// wh 81: formtable_main_895 83:formtable_main_861
+		// lh 81: formtable_main_812 83:formtable_main_813
+		String[] ss = new String[]{"uf_ghdzl","formtable_main_895","formtable_main_812"};
+		for(String uf : ss){
+			//许可证有效期至 yxqz 认证证书有效期至 yxqz1 质保协议有效期至 yxqz2
+			String endtime = JnUtil.date2String(date);
+			String sql = "select id,zdr,yxqz,yxqz1,yxqz2 from " + uf + " "
+					+ "where yxqz < '"+endtime+"' or yxqz1 < '"+endtime+"' or yxqz2 < '"+endtime+"' ";
+	
+			JnUtil.writeLog(className, "查询所有供应商的sql： " + sql);
+			rs.executeSql(sql);
+			while(rs.next()){
+				String id = "";
+				id = Util.null2String(rs.getString("id"));
+				if(uf.equals("uf_ghdzl"))
+					updateStatus(1620+"",uf,id);
+				if(uf.equals("formtable_main_935"))
+					updateStatus(1610+"",uf,id);
+				if(uf.equals("formtable_main_970"))
+					updateStatus(1630+"",uf,id);
+					
+			}
 		}
 	}
 
-	private void updateStatus(String id) {
+	private void updateStatus(String ekorg,String uf,String id) {
 		String tag = "erp:MT_Supplier_Qualification_Req";
 		String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">" +
                 "   <soapenv:Header/>\n" +
@@ -91,7 +87,7 @@ public class SupplierFile extends BaseCronJob{
                 "            <Company_Code></Company_Code>\n" +
                 "            <Send_Time></Send_Time>\n" +
                 "         </ControlInfo>\n" +
-               getLine(id) +
+               getLine(ekorg,uf,id) +
                 "      </"+tag+">\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
@@ -104,7 +100,7 @@ public class SupplierFile extends BaseCronJob{
 		
 	}
 
-	private String getLine(String id) {
+	private String getLine(String EKORG,String uf,String id) {
 		StringBuffer sb = new StringBuffer();
 		RecordSet rs = new RecordSet();
 		String sql = "select * from " + uf + " where id='"+id+"'";
@@ -117,16 +113,21 @@ public class SupplierFile extends BaseCronJob{
 		sb.append("<SPERM>" + "N" + "</SPERM>");
 		sb.append("<DATE_BEG></DATE_BEG>");
 		sb.append("<DATE_END></DATE_END>");
-		sb.append("		<Deal_Scpoe>");
-		sb.append(getjyfw(Util.null2String(rs.getString("id"))));
-		sb.append("		</Deal_Scpoe>");
+
+		String jyfwStr = getjyfw(uf, Util.null2String(rs.getString("id")));
+		if (!jyfwStr.isEmpty()) {
+			sb.append("<Deal_Scpoe>");
+			sb.append(jyfwStr);
+			sb.append("</Deal_Scpoe>");
+		}
+
 		sb.append("<Material_List>");
 		sb.append("<MATNR></MATNR>");
 		sb.append("</Material_List>");
 		return sb.toString();
 	}
 
-	private String getjyfw(String id) {
+	private String getjyfw(String uf,String id) {
 		StringBuffer sb = new StringBuffer();
 		RecordSet rs = new RecordSet();
 		String sql = "select * from " + uf + "_dt1 where mainid='"+id+"'";
@@ -144,14 +145,6 @@ public class SupplierFile extends BaseCronJob{
 
 	public void setLIFNR_TYPE(String lIFNR_TYPE) {
 		LIFNR_TYPE = lIFNR_TYPE;
-	}
-
-	public String getEKORG() {
-		return EKORG;
-	}
-
-	public void setEKORG(String eKORG) {
-		EKORG = eKORG;
 	}
 
 	public String getLIFNR() {
@@ -201,6 +194,5 @@ public class SupplierFile extends BaseCronJob{
 	public void setMATNR(String mATNR) {
 		MATNR = mATNR;
 	}
-	
-	
+
 }

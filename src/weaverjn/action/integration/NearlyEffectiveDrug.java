@@ -65,11 +65,11 @@ public class NearlyEffectiveDrug extends BaseBean implements Action {
         RET_MSG msg = parse(soapHttpResponse, "MT_NearlyEffective_Drug_Msg");
         if (msg != null) {
             if (msg.getMSG_TYPE().equals("E")) {
-                requestManager.setMessageid(msg.getMSG_TYPE());
+                requestManager.setMessageid("SAP Response Message");
                 requestManager.setMessagecontent(msg.getMESSAGE());
             }
         } else {
-            requestManager.setMessageid("E");
+            requestManager.setMessageid("SAP Response Message");
             requestManager.setMessagecontent(soapHttpResponse);
         }
         return SUCCESS;

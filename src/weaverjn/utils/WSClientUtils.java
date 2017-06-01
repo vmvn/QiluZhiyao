@@ -39,11 +39,11 @@ public class WSClientUtils {
             // 设置读数据超时时间(单位毫秒)
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                throw new IllegalStateException("调用webservice错误:" + postMethod.getStatusLine() + ";statusCode:" + statusCode + ";serviceEpr:" + serviceEpr + ";soapRequest:" + soapRequest);
-            }
-
             String soapRequestData = postMethod.getResponseBodyAsString();
+            if (statusCode != HttpStatus.SC_OK) {
+//                throw new IllegalStateException("调用webservice错误:" + postMethod.getStatusLine() + ";statusCode:" + statusCode + ";serviceEpr:" + serviceEpr + ";soapRequest:" + soapRequest);
+                soapRequestData = "SAP接口报错";
+            }
             return soapRequestData;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -91,11 +91,11 @@ public class WSClientUtils {
             // 设置读数据超时时间(单位毫秒)
             managerParams.setSoTimeout(6000000);
             int statusCode = httpClient.executeMethod(postMethod);
-            if (statusCode != HttpStatus.SC_OK) {
-                throw new IllegalStateException("调用webservice错误:" + postMethod.getStatusLine() + ";statusCode:" + statusCode + ";serviceEpr:" + serviceEpr + ";soapRequest:" + soapRequest);
-            }
-
             String soapRequestData = postMethod.getResponseBodyAsString();
+            if (statusCode != HttpStatus.SC_OK) {
+//                throw new IllegalStateException("调用webservice错误:" + postMethod.getStatusLine() + ";statusCode:" + statusCode + ";serviceEpr:" + serviceEpr + ";soapRequest:" + soapRequest);
+                soapRequestData = "SAP 接口报错";
+            }
             return soapRequestData;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

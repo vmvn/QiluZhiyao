@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.weaver.TestInit;
+//import com.weaver.TestInit;
 
 import weaver.conn.RecordSet;
 import weaver.general.Util;
@@ -31,7 +31,7 @@ public class BuyerFile extends BaseCronJob{
 
 	public static void main(String[] args) {
 		
-		TestInit.init();
+//		TestInit.init();
 		BuyerFile sf = new BuyerFile();
 		sf.doit();
 		System.out.println(">>>>>ok");

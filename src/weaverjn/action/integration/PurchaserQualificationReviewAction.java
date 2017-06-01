@@ -47,6 +47,8 @@ public class PurchaserQualificationReviewAction extends BaseBean implements Acti
             rs.executeSql(sql);
             rs.next();
             sfzh = Util.null2String(rs.getString("cgysfzh"));
+            int billId = requestManager.getBillid();
+            this.uf = utils.getModTableName("cgysfzh", billId);
             String sql2 = "select * from uf_wrghdwzl where id='"+Util.null2String(rs.getString("ghdwbm"))+"'";
             rs2.executeSql(sql2);
             writeLog("去建模查询购货单位名称sql： " + sql2);

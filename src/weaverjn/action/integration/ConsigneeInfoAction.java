@@ -11,7 +11,9 @@ import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
+import weaverjn.crm.main.GouhuoDanweiShouhuoren;
 import weaverjn.schedule.JnUtil;
+import weaverjn.utils.PropertiesUtil;
 import weaverjn.utils.WSClientUtils;
 
 /**
@@ -20,6 +22,7 @@ import weaverjn.utils.WSClientUtils;
  * @tel 13256247773
  * 2017年5月23日 下午3:44:32
  */
+//购货单位收货人资料
 public class ConsigneeInfoAction extends BaseBean implements Action {
     private String vkorg;
     @Override
@@ -36,6 +39,9 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
             rs.executeSql(sql);
             rs.next();
             String sfzh = Util.null2String(rs.getString("shrsfz"));
+            if (sfzh.isEmpty()) {
+                sfzh = Util.null2String(rs.getString("lsh"));
+            }
             String soapRequest = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">\n" +
                     "   <soapenv:Header/>\n" +
                     "   <soapenv:Body>\n" +
@@ -43,7 +49,7 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
                     "         <ControlInfo>\n" +
                     "            <INTF_ID></INTF_ID>\n" +
                     "            <Src_System>OA</Src_System>\n" +
-                    "            <Dest_System>SAPERP</Dest_System>\n" +
+                    "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
                     "            <Company_Code></Company_Code>\n" +
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
@@ -58,7 +64,7 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
                     "         <ZJSHYJ>" + (Util.null2String(rs.getString("hwjsh")).equals("0") ? "Y" : "N") + "</ZJSHYJ>\n" +
                     "         <ZSFZFYJ>" + (Util.null2String(rs.getString("ywsfzfyj")).equals("0") ? "Y" : "N") + "</ZSFZFYJ>\n" +
                     "         <ZFYJGZ>" + (Util.null2String(rs.getString("sfzfyj")).equals("0") ? "Y" : "N") + "</ZFYJGZ>\n" +
-                    "         <NAME_LAST>"+Util.null2String(rs.getString("shrxm"))+"</NAME_LAST>\n" +
+                    "         <NAME_LAST>" + Util.null2String(rs.getString("shrxm")) + "</NAME_LAST>\n" +
                     "         <PSTLZ></PSTLZ>\n" +
                     "         <ORT01>" + Util.null2String(rs.getString("sqqy")) + "</ORT01>\n" +
                     "         <LAND1>CN</LAND1>\n" +
@@ -80,22 +86,34 @@ public class ConsigneeInfoAction extends BaseBean implements Action {
             } else {
                 reg_msg += soapResponse;
                 sql = "update " + t + " set ret_msg='" + reg_msg + "' where id=" + billId;
+
             }
             writeLog("修改收货人编号信息的sql：" + sql);
             rs.executeSql(sql);
-            RecordSetDataSource rsds = new RecordSetDataSource("crm_db");
+            String GSID = "";
+            if (this.vkorg.equals("1610")) {
+                GSID = "01001";
+            } else if (this.vkorg.equals("1620")) {
+                GSID = "01002";
+            } else if (this.vkorg.equals("1630")) {
+                GSID = "01003";
+            }
+            GouhuoDanweiShouhuoren gouhuoDanweiShouhuoren = new GouhuoDanweiShouhuoren();
+            gouhuoDanweiShouhuoren.setVkorg(GSID);
+            gouhuoDanweiShouhuoren.execute(requestInfo);
+            /*RecordSetDataSource rsds = new RecordSetDataSource("crm_db");
             String datetime = JnUtil.date2String(Calendar.getInstance().getTime());
         	datetime = datetime.replace("-", "");
         	datetime += " 00:00:00";
         	String date = datetime.substring(0,8);
-            String sql2 = "update YXOASHR set YXOASHR_BGRQ='"+date+"',YXOASHR_BGSJ='"+datetime+"',YXOASHR_SHRBH='"+msg.getZSHR_BM()+"' where YXOASHR_SFZH='"+sfzh+"'";
+            String sql2 = "update YXOASHR set YXOASHR_BGRQ='" + date + "',YXOASHR_BGSJ='" + datetime + "',YXOASHR_SHRBH='" + msg.getZSHR_BM() + "' where YXOASHR_SFZH='" + sfzh + "'";
             writeLog("修改收货人CRM记录sql： " + sql2);
             boolean f = rsds.execute(sql2);
             if(f){
             	writeLog("修改CRM收货人记录成功！");
             }else{
             	writeLog("修改CRM收货人记录失败！");
-            }
+            }*/
         }
         return SUCCESS;
     }

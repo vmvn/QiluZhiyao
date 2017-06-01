@@ -1,6 +1,5 @@
 package weaverjn.crm.main;
 
-import org.jetbrains.annotations.NotNull;
 import weaver.conn.RecordSet;
 import weaver.conn.RecordSetDataSource;
 import weaver.general.BaseBean;
@@ -9,9 +8,13 @@ import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
 
 /**
+ * 购货单位收货人
+ * 自定义代码配置
  * Created by zhaiyaqi on 2017/4/21.
  */
 public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
+	private String vkorg;
+	
     @Override
     public String execute(RequestInfo requestInfo) {
         String billId = requestInfo.getRequestid();
@@ -63,6 +66,7 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
                         "YXOASHR_FRQZ='" + YXOASHR_FRQZ + "', " +
                         "YXOASHR_DWQZ='" + YXOASHR_DWQZ + "', " +
                         "YXOASHR_HWJSHYJ='" + YXOASHR_HWJSHYJ + "', " +
+                        "YXOASHR_GSID='"+vkorg+"'," + 
                         "YXOASHR_SQQY='" + YXOASHR_SQQY + "', " +
                         "YXOASHR_SHFW='" + YXOASHR_SHFW + "' where  YXOASHR_SHRBH='" + YXOASHR_SHRBH + "'";
             } else {
@@ -84,7 +88,7 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
                         "YXOASHR_HWJSHYJ, " +
                         "YXOASHR_SQQY, " +
                         "YXOASHR_SHRBH, " +
-                        "YXOASHR_SHFW) values(" +
+                        "YXOASHR_SHFW,YXOASHR_GSID) values(" +
                         "'" + YXOASHR_BGRQ + "', " +
                         "'" + YXOASHR_BGSJ + "', " +
                         "'" + YXOASHR_KHBH + "', " +
@@ -102,7 +106,7 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
                         "'" + YXOASHR_HWJSHYJ + "', " +
                         "'" + YXOASHR_SQQY + "', " +
                         "'" + YXOASHR_SHRBH + "'," +
-                        "'" + YXOASHR_SHFW + "')";
+                        "'" + YXOASHR_SHFW + "','"+vkorg+"')";
             }
             if (rsds.executeSql(sql)) {
                 syncDetailTable(billId, tableName + "_dt1", YXOASHR_SHRBH);
@@ -139,7 +143,7 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
                         "YXOASHRPZ_SPM, " +
                         "YXOASHRPZ_GG, " +
                         "YXOASHRPZ_BZGG, " +
-                        "YXOASHRPZ_XDGG) values(" +
+                        "YXOASHRPZ_XDGG,YXOASHRPZ_GSID) values(" +
                         "'" + YXOASHRPZ_BGRQ + "', " +
                         "'" + YXOASHRPZ_BGSJ + "', " +
                         "'" + YXOASHR_SHRBH + "', " +
@@ -148,7 +152,8 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
                         "'" + YXOASHRPZ_SPM + "', " +
                         "'" + YXOASHRPZ_GG + "', " +
                         "'" + YXOASHRPZ_BZGG + "', " +
-                        "'" + YXOASHRPZ_XDGG + "')";
+                        "'" + YXOASHRPZ_XDGG + "','"+vkorg+"')";
+                writeLog("购货单位收货人传输CRM： " + sql);
                 if (!rsds.executeSql(sql)) {
                     writeLog(sql);
                 }
@@ -170,7 +175,6 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
         return s.toString();
     }
 
-    @NotNull
     private String getSApMultiValue(String table, String field, String cField, String cValue) {
         String sql = "select " + field + " from " + table + " where " + cField + "='" + cValue + "'";
         RecordSet recordSet = new RecordSet();
@@ -184,4 +188,12 @@ public class GouhuoDanweiShouhuoren extends BaseBean implements Action {
         }
         return s.toString();
     }
+
+	public String getVkorg() {
+		return vkorg;
+	}
+
+	public void setVkorg(String vkorg) {
+		this.vkorg = vkorg;
+	}
 }
