@@ -190,4 +190,3 @@ public class DrugInformation extends BaseBean implements Action  {
 		this.uf = uf;
 	}
 }
-	

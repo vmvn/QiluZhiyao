@@ -68,10 +68,12 @@ public class Fun_Location2OABrowser extends BaseBean {
                 "      </erp:MT_Fun_Location_Req>\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
+        writeLog(request);
         String username = utils.getUsername();
         String password = utils.getPassword();
         String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
         String response = WSClientUtils.callWebService(request, endpoint, username, password);
+//        writeLog(response);
         String datas = parseData(response);
 //        log(datas);
         return datas;
@@ -105,11 +107,6 @@ public class Fun_Location2OABrowser extends BaseBean {
         return s.toString();
     }
 
-    private void log(Object o) {
-        writeLog(o);
-        System.out.println(o);
-    }
-
     private String getsql(String TPLNR, String PLTXT) {
         return "insert into Fun_Location2OA(TPLNR,PLTXT) values(" +
                 "'" + TPLNR + "'," +
@@ -121,7 +118,8 @@ public class Fun_Location2OABrowser extends BaseBean {
         String driver = "oracle.jdbc.driver.OracleDriver";
         String username = "ecology";
         String password = "ecology";
-        String url = "jdbc:oracle:thin:@192.168.1.109:1521:ecology";
+        String url;
+        url = new PropertiesUtil().getPropValue("weaver", "ecology.url");
         Connection conn = null;
         Statement statement = null;
         try {

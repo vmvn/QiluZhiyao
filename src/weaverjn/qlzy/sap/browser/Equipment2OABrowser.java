@@ -102,7 +102,7 @@ public class Equipment2OABrowser extends BaseBean {
         String username = utils.getUsername();
         String password = utils.getPassword();
         String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
-        writeLog(endpoint);
+//        writeLog(endpoint);
         String response = WSClientUtils.callWebService(request, endpoint, username, password);
         datas = parseData(response);
         datas = datas.replaceAll("&", "&amp;");
@@ -171,7 +171,8 @@ public class Equipment2OABrowser extends BaseBean {
         String driver = "oracle.jdbc.driver.OracleDriver";
         String username = "ecology";
         String password = "ecology";
-        String url = "jdbc:oracle:thin:@192.168.1.109:1521:ecology";
+        String url;
+        url = new PropertiesUtil().getPropValue("weaver", "ecology.url");
         Connection conn = null;
         Statement statement = null;
         try {

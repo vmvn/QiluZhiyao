@@ -27,76 +27,85 @@ public class OAwlxqjhAction extends BaseBean implements Action {
         writeLog("run");
         RequestManager requestManager = requestInfo.getRequestManager();
         String src = requestManager.getSrc();
-        String[] ret_messages = new String[3];
-        if (!src.equals("reject")) {
-            if ((this.getCompany() == null || "".equals(this.getCompany())) && (this.getDepartment() == null || "".equals(this.getDepartment()))) {
-                requestInfo.getRequestManager().setMessageid("Info");
-                requestInfo.getRequestManager().setMessagecontent("请配置Action 参数");
-            } else {
-                writeLog("<company>" + this.getCompany());
-                writeLog("<department>" + this.getDepartment());
-                String workflowId = requestInfo.getWorkflowid();
-                String requestId = requestInfo.getRequestid();
-                RecordSet recordSet = new RecordSet();
-                String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + workflowId;
-                recordSet.executeSql(sql);
-                recordSet.next();
-                String t = recordSet.getString("tablename");
-                sql = "select * from " + t + " where requestid=" + requestId;
-                recordSet.executeSql(sql);
-                if (recordSet.next()) {
-                    int id = recordSet.getInt("id");
-                    String MOVE_TYPE = getMVTYPE(Util.null2String(recordSet.getString("ydlx")));
-                    String DEPARTMENT = getDepartmentName(recordSet.getInt("sqbm"));
-                    String REQUISITOR = getLastName(recordSet.getInt("sqr"));
-                    String WERKS = getCompanyCode(Util.null2String(recordSet.getString("gcbm")));
-                    String KOSTL = Util.null2String(recordSet.getString("xqbm"));
-                    String UMLGO = Util.null2String(recordSet.getString("jskcd1"));
-                    String AUFNR = Util.null2String(recordSet.getString("nbdd2"));
-                    String sqr = Util.null2String(recordSet.getString("sqr"));
+        if ((this.getCompany() == null || "".equals(this.getCompany())) && (this.getDepartment() == null || "".equals(this.getDepartment()))) {
+            requestManager.setMessageid("Info");
+            requestManager.setMessagecontent("请配置Action 参数");
+        } else {
+            writeLog("<company>" + this.getCompany());
+            writeLog("<department>" + this.getDepartment());
+            String workflowId = requestInfo.getWorkflowid();
+            String requestId = requestInfo.getRequestid();
+            RecordSet recordSet = new RecordSet();
+            String sql = "select b.tablename,b.id from workflow_base a,workflow_bill b where a.formid = b.id and a.id = " + workflowId;
+            recordSet.executeSql(sql);
+            recordSet.next();
+            String t = recordSet.getString("tablename");
+            sql = "select * from " + t + " where requestid=" + requestId;
+            writeLog(sql);
+            recordSet.executeSql(sql);
+            recordSet.next();
+            int id = recordSet.getInt("id");
+            String MOVE_TYPE = getMVTYPE(Util.null2String(recordSet.getString("ydlx")));
+            String DEPARTMENT = getDepartmentName(recordSet.getInt("sqbm"));
+            String REQUISITOR = getLastName(recordSet.getInt("sqr"));
+            String WERKS = getCompanyCode(Util.null2String(recordSet.getString("gcbm")));
+            String KOSTL = Util.null2String(recordSet.getString("xqbm"));
+            String UMLGO = Util.null2String(recordSet.getString("jskcd1"));
+            String AUFNR = Util.null2String(recordSet.getString("nbdd2"));
+            String sqr = Util.null2String(recordSet.getString("sqr"));
 
-                    String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\" xmlns:gdt=\"http://sap.com/xi/SAPGlobal/GDT\">\n" +
-                            "   <soapenv:Header/>\n" +
-                            "   <soapenv:Body>\n" +
-                            "      <erp:MT_DemandPlan>\n" +
-                            "         <ControlInfo>\n" +
-                            "            <INTF_ID>I0032</INTF_ID>\n" +
-                            "            <Src_System>OA</Src_System>\n" +
-                            "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
-                            "            <Company_Code></Company_Code>\n" +
-                            "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
-                            "         </ControlInfo>\n" +
-                            "         <DEMANDPLAN_NO>" + requestId + "</DEMANDPLAN_NO>\n" +
-                            "         <MV_TYPE>" + MOVE_TYPE + "</MV_TYPE>\n" +
-                            "         <GRUND></GRUND>\n" +
-                            "         <DEPARTMENT>" + DEPARTMENT + "</DEPARTMENT>\n" +
-                            "         <REQUISITOR>" + REQUISITOR + "</REQUISITOR>\n" +
-                            "         <WERKS>" + WERKS + "</WERKS>\n" +
-                            "         <KOSTL>" + KOSTL + "</KOSTL>\n" +
-                            "         <AUFNR>" + AUFNR + "</AUFNR>\n" +
-                            "         <ACCOUNT></ACCOUNT>\n" +
-                            "         <UMWRK></UMWRK>\n" +
-                            "         <UMLGO>" + UMLGO + "</UMLGO>\n" +
-                            "         <!--1 or more repetitions:-->\n" +
-                            getDetails(id, t, sqr) +
-                            "      </erp:MT_DemandPlan>\n" +
-                            "   </soapenv:Body>\n" +
-                            "</soapenv:Envelope>";
-                    writeLog(request);
-                    String username = utils.getUsername();
-                    String password = utils.getPassword();
-                    String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
-                    String response = WSClientUtils.callWebService(request, endpoint, username, password);
-                    writeLog(response);
-                    ret_messages = getRet_Messages(response);
-                }
-                if ("E".equals(ret_messages[0])) {
-                    requestInfo.getRequestManager().setMessageid("SAP返回信息");
-                    requestInfo.getRequestManager().setMessagecontent(ret_messages[1]);
+            String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\" xmlns:gdt=\"http://sap.com/xi/SAPGlobal/GDT\">\n" +
+                    "   <soapenv:Header/>\n" +
+                    "   <soapenv:Body>\n" +
+                    "      <erp:MT_DemandPlan>\n" +
+                    "         <ControlInfo>\n" +
+                    "            <INTF_ID>I0032</INTF_ID>\n" +
+                    "            <Src_System>OA</Src_System>\n" +
+                    "            <Dest_System>SAPERP" + new PropertiesUtil().getPropValue("saperp", "Dest_System") + "</Dest_System>\n" +
+                    "            <Company_Code></Company_Code>\n" +
+                    "            <Send_Time>" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + "</Send_Time>\n" +
+                    "         </ControlInfo>\n" +
+                    "         <DEMANDPLAN_NO>" + requestId + "</DEMANDPLAN_NO>\n" +
+                    "         <MV_TYPE>" + MOVE_TYPE + "</MV_TYPE>\n" +
+                    "         <GRUND></GRUND>\n" +
+                    "         <DEPARTMENT>" + DEPARTMENT + "</DEPARTMENT>\n" +
+                    "         <REQUISITOR>" + REQUISITOR + "</REQUISITOR>\n" +
+                    "         <WERKS>" + WERKS + "</WERKS>\n" +
+                    "         <KOSTL>" + KOSTL + "</KOSTL>\n" +
+                    "         <AUFNR>" + AUFNR + "</AUFNR>\n" +
+                    "         <ACCOUNT></ACCOUNT>\n" +
+                    "         <UMWRK></UMWRK>\n" +
+                    "         <UMLGO>" + UMLGO + "</UMLGO>\n" +
+                    "         <!--1 or more repetitions:-->\n" +
+                    getDetails(id, t, sqr) +
+                    "      </erp:MT_DemandPlan>\n" +
+                    "   </soapenv:Body>\n" +
+                    "</soapenv:Envelope>";
+            writeLog(request);
+            String username = utils.getUsername();
+            String password = utils.getPassword();
+            String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
+            String response = WSClientUtils.callWebService(request, endpoint, username, password);
+            writeLog(response);
+            Ret_Messages ret_messages = getRet_Messages(response);
+
+            writeLog("ret_messages:" + ret_messages);
+            if (ret_messages == null) {
+                writeLog("oa1");
+//                if (!response.contains("Read timed out")) {
+                    writeLog("oa2");
+                    requestManager.setMessageid("SAP Response Message");
+                    requestManager.setMessagecontent(response);
+//                }
+            } else {
+                if (ret_messages.getMSG_TYPE().equals("E")) {
+                    writeLog("oa3");
+                    requestManager.setMessageid("SAP Response Message");
+                    requestManager.setMessagecontent(ret_messages.getMESSAGE());
                 } else {
-                    sql = "update " + t + " set ylh='" + ret_messages[2] + "' where requestid=" + requestId;
-                    recordSet.executeSql(sql);
+                    sql = "update " + t + " set ylh='" + (ret_messages.getSAP_NO() + "/" + ret_messages.getREQ_NO()) + "' where requestid=" + requestId;
                     writeLog(sql);
+                    recordSet.executeSql(sql);
                 }
             }
         }
@@ -147,7 +156,8 @@ public class OAwlxqjhAction extends BaseBean implements Action {
             v += "         <Lines>\n" +
                     "            <ZLNNBR>" + i + "</ZLNNBR>\n" +
                     "            <MATNR>" + Util.null2String(recordSet.getString("wlbh1")) + "</MATNR>\n" +
-                    "            <MAKTX>" + slice(Util.null2String(recordSet.getString("wlmsmc")), 40) + "</MAKTX>\n" +
+//                    "            <MAKTX>" + slice(Util.null2String(recordSet.getString("wlmsmc")), 40) + "</MAKTX>\n" +
+                    "            <MAKTX></MAKTX>\n" +
                     "            <MENGE>" + Util.null2String(recordSet.getString("xqsl")) + "</MENGE>\n" +
                     "            <MEINS>" + Util.null2String(recordSet.getString("jldw")) + "</MEINS>\n" +
                     "            <REQ_DATE>" + Util.null2String(recordSet.getString("xqrq")) + "</REQ_DATE>\n" +
@@ -176,8 +186,8 @@ public class OAwlxqjhAction extends BaseBean implements Action {
         }
         return v;
     }
-    private String[] getRet_Messages(String string) {
-        String[] v = new String[3];
+    private Ret_Messages getRet_Messages(String string) {
+        Ret_Messages ret_messages = null;
         try {
             Document dom = DocumentHelper.parseText(string);
             Element root = dom.getRootElement();
@@ -186,13 +196,15 @@ public class OAwlxqjhAction extends BaseBean implements Action {
             String MESSAGE = Ret_Messages.elementText("MESSAGE");
             String SAP_NO = root.element("Body").element("MT_DemandPlan_RetMsg").elementText("SAP_NO");
             String REQ_NO = root.element("Body").element("MT_DemandPlan_RetMsg").elementText("REQ_NO");
-            v[0] = MSG_TYPE;
-            v[1] = MESSAGE;
-            v[2] = SAP_NO + "/" + REQ_NO;
+            ret_messages = new Ret_Messages();
+            ret_messages.setMSG_TYPE(MSG_TYPE);
+            ret_messages.setMESSAGE(MESSAGE);
+            ret_messages.setSAP_NO(SAP_NO);
+            ret_messages.setREQ_NO(REQ_NO);
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-        return v;
+        return ret_messages;
     }
 
     private String getCompanyCode(String id) {
@@ -260,5 +272,44 @@ public class OAwlxqjhAction extends BaseBean implements Action {
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    class Ret_Messages{
+        private String MSG_TYPE;
+        private String MESSAGE;
+        private String SAP_NO;
+        private String REQ_NO;
+
+        public String getMSG_TYPE() {
+            return MSG_TYPE;
+        }
+
+        public void setMSG_TYPE(String MSG_TYPE) {
+            this.MSG_TYPE = MSG_TYPE;
+        }
+
+        public String getMESSAGE() {
+            return MESSAGE;
+        }
+
+        public void setMESSAGE(String MESSAGE) {
+            this.MESSAGE = MESSAGE;
+        }
+
+        public String getSAP_NO() {
+            return SAP_NO;
+        }
+
+        public void setSAP_NO(String SAP_NO) {
+            this.SAP_NO = SAP_NO;
+        }
+
+        public String getREQ_NO() {
+            return REQ_NO;
+        }
+
+        public void setREQ_NO(String REQ_NO) {
+            this.REQ_NO = REQ_NO;
+        }
     }
 }

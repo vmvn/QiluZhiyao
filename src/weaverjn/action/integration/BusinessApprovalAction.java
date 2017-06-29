@@ -46,7 +46,7 @@ public class BusinessApprovalAction extends BaseBean implements Action {
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
                     "         <lifnr>" + Util.null2String(recordSet.getString("gysbh")) + "</lifnr>\n" +
-//                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
+//                    "         <ekorg>" + util.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
                     "         <ekorg>" + this.ekorg + "</ekorg>\n" +
                     "         <nickname>" + utils.getFieldValue("uf_ghdzl", "ghfmc", Util.null2String(recordSet.getString("ghfmc"))) + "</nickname>\n" +
                     "         <zyyzz_yxq>" + Util.null2String(recordSet.getString("njrq")) + "</zyyzz_yxq>\n" +

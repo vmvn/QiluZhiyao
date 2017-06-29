@@ -22,21 +22,15 @@ public class GuardAction extends BaseBean implements Action {
         String tablename = recordSet.getString("tablename");
 
         sql = "select " + this.getFieldname() + " from " + tablename + " where requestid=" + requestid;
-        log(sql);
+        writeLog(sql);
         recordSet.executeSql(sql);
         recordSet.next();
         String v = Util.null2String(recordSet.getString(this.getFieldname()));
         if (v.equals("")) {
-            requestInfo.getRequestManager().setMessageid("Message");
+            requestInfo.getRequestManager().setMessageid("WARNING");
             requestInfo.getRequestManager().setMessagecontent("审批状态尚未回写，不能提交！");
         }
         return SUCCESS;
-    }
-
-    private void log(Object o) {
-        String prefix = "<" + this.getClass().getName() + ">";
-        System.out.println(prefix + o);
-        writeLog(prefix + o);
     }
 
     public String getFieldname() {

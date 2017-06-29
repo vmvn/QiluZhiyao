@@ -5,8 +5,11 @@ import weaver.conn.RecordSetDataSource;
 import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
-import weaver.soa.workflow.request.Property;
 import weaver.soa.workflow.request.RequestInfo;
+import weaver.workflow.request.RequestManager;
+import weaverjn.action.integration.utils;
+
+import java.util.Map;
 
 /**
  * 客户
@@ -15,7 +18,9 @@ import weaver.soa.workflow.request.RequestInfo;
  * 2017年4月20日 上午11:51:53
  */
 public class YXOAKH extends BaseBean implements Action{
-
+	private String uf;//uf_wrghdwzl
+	private String vkorg;
+	
 	private static final String tablename = "YXOAKH";
 	private RecordSetDataSource rsds = new RecordSetDataSource("crm_db");
 	
@@ -50,12 +55,12 @@ public class YXOAKH extends BaseBean implements Action{
 	private String a29_yxqz = "";
 	private String a30_zltxdcb = "";
 	private String a31_dtyxq = "";
-
+	private String a32_zcdz = "";
 	
 	private static final String b1_ghfbh= "ghfbh";
 	private static final String b2_fddbr= "fddbr";
 	private static final String b3_ghdwzt= "ghdwzt";
-	private static final String b4_yyzzzch= "yyzzzch";
+	private static final String b4_yyzzzch= "sh";
 	private static final String b5_yyzzfzjg= "yyzzfzjg";
 	private static final String b6_yyzzfzrq= "yyzzfzrq";
 	private static final String b7_yyzzyxqz= "yyzzyxqz";
@@ -63,7 +68,7 @@ public class YXOAKH extends BaseBean implements Action{
 	private static final String b9_khlx= "khlx";
 	private static final String b10_zzjgdm= "zzjgdm";
 	private static final String b11_zzjgfzrq= "zzjgfzrq";
-	private static final String b12_yxqz= "yxqz";
+	private static final String b12_yxqz= "zzjgyxqz";
 	private static final String b13_swdjzbh= "swdjzbh";
 	private static final String b14_xkzbh= "xkzbh";
 	private static final String b15_xkzmclx= "xkzmclx";
@@ -84,25 +89,22 @@ public class YXOAKH extends BaseBean implements Action{
 	private static final String b30_zltxdcb= "zltxdcb";
 	private static final String b31_dtyxq= "dtyxq";
 	
+	
+	private static final String regEx = "^(0+)";
 	@Override
 	public String execute(RequestInfo requestInfo) {
-		Property[] properties = requestInfo.getMainTableInfo().getProperty();// 获取表单主字段信息
-		String t = requestInfo.getRequestManager().getBillTableName();//表单名称
-		String name = "",value = "";
-		String ghfmc = "";
-		for (int i = 0; i < properties.length; i++) {
-			name = properties[i].getName();// 主字段名称
-			value = Util.null2String(properties[i].getValue());// 主字段对应的值
-			if(name.equals("ghfmc")){
-				ghfmc = value;
-				break;
-			}
-		}
+		RequestManager requestManager = requestInfo.getRequestManager();
+		Map<String, String> mainTableData = utils.getMainTableData(requestInfo.getMainTableInfo());
+		String t = requestManager.getBillTableName();//表单名称
+		String ghfmc = mainTableData.get("ghdwmc1") == null ? mainTableData.get("ghfmc") : mainTableData.get("ghdwmc1");
 		RecordSet rs = new RecordSet();
 		RecordSet rs2 = new RecordSet();
-		rs.executeSql("select * from uf_wrghdwzl where id=" + ghfmc);
+		String sqll = "select * from " + uf + " where id=" + ghfmc;
+		rs.executeSql(sqll);
+		writeLog("查询客户的sql： " + sqll);
 		if(rs.next()){
-			setA1_ghfbh(Util.null2String(rs.getString(b1_ghfbh)));
+			String ghfbh = Util.null2String(rs.getString(b1_ghfbh));
+			setA1_ghfbh(Util.null2String(rs.getString(b1_ghfbh)).replaceAll(regEx, ""));
 			setA2_fddbr(Util.null2String(rs.getString(b2_fddbr)));
 			setA3_ghdwzt(Util.null2String(rs.getString(b3_ghdwzt)));
 			setA4_yyzzzch(Util.null2String(rs.getString(b4_yyzzzch)));
@@ -120,13 +122,14 @@ public class YXOAKH extends BaseBean implements Action{
 			setA16_xkzfzjg(Util.null2String(rs.getString(b16_xkzfzjg)));
 			setA17_xkzfzrq(Util.null2String(rs.getString(b17_xkzfzrq)).replace("-", ""));
 			setA18_xkzyxqz(Util.null2String(rs.getString(b18_xkzyxqz)).replace("-", ""));
-			String jyfwsql = "select t2.jyfw jyfw from uf_wrghdwzl t1 left join uf_wrghdwzl_dt2 t2 on t1.id=t2.mainid where T1.GHFBH='"+getA1_ghfbh()+"' ";
+			String jyfwsql = "select t2.jyfw jyfw from " + uf + " t1 left join " + uf + "_dt2 t2 on t1.id=t2.mainid where T1.GHFBH='" + ghfbh + "' ";
+			writeLog(jyfwsql);
 			String jyfwstr = "";
 			rs2.executeSql(jyfwsql);
 			while(rs2.next()){
 				jyfwstr += "," + Util.null2String(rs2.getString("jyfw"));
 			}
-			jyfwstr = jyfwstr.substring(1);
+			jyfwstr = jyfwstr.length() == 0 ? jyfwstr : jyfwstr.substring(1);
 			setA19_jyfw(jyfwstr);
 			setA20_qyfzr(Util.null2String(rs.getString(b20_qyfzr)));
 			setA21_zlfzr(Util.null2String(rs.getString(b21_zlfzr)));
@@ -138,18 +141,23 @@ public class YXOAKH extends BaseBean implements Action{
 			setA27_gspyxqz(Util.null2String(rs.getString(b27_gspyxqz)).replace("-", ""));
 			setA28_zlbzxys(Util.null2String(rs.getString(b28_zlbzxys)));
 			setA29_yxqz(Util.null2String(rs.getString(b29_yxqz)).replace("-", ""));
-			setA30_zltxdcb(Util.null2String(rs.getString(b30_zltxdcb)));
+			setA30_zltxdcb(Util.null2String(rs.getString(b30_zltxdcb)).equals("0") ? "1" : "0");
 			setA31_dtyxq(Util.null2String(rs.getString(b31_dtyxq)).replace("-", ""));
+			setA32_zcdz(Util.null2String(rs.getString("dz")));
+
 		}
 		
-		if(!t.equals("formtable_main_851")){	//变更
+		String sql = "select * from " + tablename + " where YXOAKH_KHBH='"+getA1_ghfbh()+"' and YXOAKH_GSID='"+vkorg+"'";
+		writeLog("查询CRM数据库是否存在该条记录： " + sql);
+		rsds.executeSql(sql);
+		if(rsds.next()){
 			String editsql = this.editSqlGroup(tablename);
 			rsds.execute(editsql);
-			writeLog("修改sql: " + editsql);
+			writeLog("CRM客户修改sql: " + editsql);
 		}else{
 			String addsql = this.addSqlGroup(tablename);
 			rsds.execute(addsql);
-			writeLog("新增sql： " + addsql);
+			writeLog("CRM客户新增sql： " + addsql);
 		}
 		
 		return Action.SUCCESS;
@@ -158,8 +166,7 @@ public class YXOAKH extends BaseBean implements Action{
 	private String addSqlGroup(String tablename2) {
 		StringBuffer key = new StringBuffer("insert into " + tablename + "(");
 		StringBuffer val = new StringBuffer(" values(");
-		key.append("YXOAKH_BGRQ,YXOAKH_BGSJ,YXOAKH_KHBH,YXOAKH_FR,YXOAKH_SYBZ,YXOAKH_YYZZHM,YXOAKH_YYZZ1,YXOAKH_YYZZ2,YXOAKH_YYZZ3,YXOAKH_ZCZB,YXOAKH_KHLX,YXOAKH_ZZJGHM,YXOAKH_ZZJG1,YXOAKH_ZZJG2,YXOAKH_ZZJG3,YXOAKH_XKZHM,YXOAKH_XKZMC,YXOAKH_XKZ1,YXOAKH_XKZ2,YXOAKH_XKZ3,YXOAKH_XKZ4,YXOAKH_XKZ5,YXOAKH_XKZ6,YXOAKH_XKZ7,YXOAKH_GSPHM,YXOAKH_GSPMC,YXOAKH_GSP1,YXOAKH_GSP2,YXOAKH_GSP3,YXOAKH_ZLBZSHM,YXOAKH_ZLBZS1,YXOAKH_ZLBZS2,YXOAKH_ZLBZS3)");
-		val.append("'" + JnUtils.getDate("date") + "',");
+		key.append("YXOAKH_BGRQ,YXOAKH_BGSJ,YXOAKH_KHBH,YXOAKH_FR,YXOAKH_SYBZ,YXOAKH_YYZZHM,YXOAKH_YYZZ1,YXOAKH_YYZZ2,YXOAKH_YYZZ3,YXOAKH_ZCZB,YXOAKH_KHLX,YXOAKH_ZZJGHM,YXOAKH_ZZJG1,YXOAKH_ZZJG2,YXOAKH_ZZJG3,YXOAKH_XKZHM,YXOAKH_XKZMC,YXOAKH_XKZ1,YXOAKH_XKZ2,YXOAKH_XKZ3,YXOAKH_XKZ4,YXOAKH_XKZ5,YXOAKH_XKZ6,YXOAKH_XKZ7,YXOAKH_GSPHM,YXOAKH_GSPMC,YXOAKH_GSP1,YXOAKH_GSP2,YXOAKH_GSP3,YXOAKH_ZLBZSHM,YXOAKH_ZLBZS1,YXOAKH_ZLBZS2,YXOAKH_ZLBZS3,YXOAKH_ZCDZ,YXOAKH_GSID)");		val.append("'" + JnUtils.getDate("date") + "',");
 		val.append("'" + JnUtils.getDate("datetime") + "',");
 		val.append("'" + getA1_ghfbh() + "',");
 		val.append("'" + getA2_fddbr() + "',");
@@ -191,7 +198,10 @@ public class YXOAKH extends BaseBean implements Action{
 		val.append("'" + getA28_zlbzxys() + "',");
 		val.append("'" + getA29_yxqz() + "',");
 		val.append("'" + getA30_zltxdcb() + "',");
-		val.append("'" + getA31_dtyxq() + "')");
+		val.append("'" + getA31_dtyxq() + "',");
+		val.append("'" + getA32_zcdz() + "',");
+
+		val.append("'" + vkorg + "')");
 		String sql = key.toString() + val.toString();
 		return sql;
 	}
@@ -229,7 +239,9 @@ public class YXOAKH extends BaseBean implements Action{
 		key.append("YXOAKH_ZLBZSHM='"+getA28_zlbzxys()+"',");
 		key.append("YXOAKH_ZLBZS1='"+getA29_yxqz()+"',");
 		key.append("YXOAKH_ZLBZS2='"+getA30_zltxdcb()+"',");
-		key.append("YXOAKH_ZLBZS3='"+getA31_dtyxq()+"' ");
+		key.append("YXOAKH_ZLBZS3='"+getA31_dtyxq()+"', ");
+		key.append("YXOAKH_ZCDZ='"+getA32_zcdz()+"', ");
+		key.append("YXOAKH_GSID='"+vkorg+"' ");
 		key.append(" where YXOAKH_KHBH='"+getA1_ghfbh()+"' ");
 		return key.toString();
 	}
@@ -487,6 +499,30 @@ public class YXOAKH extends BaseBean implements Action{
 
 	public void setA31_dtyxq(String a31_dtyxq) {
 		this.a31_dtyxq = a31_dtyxq;
+	}
+
+	public String getUf() {
+		return uf;
+	}
+
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
+
+	public String getVkorg() {
+		return vkorg;
+	}
+
+	public void setVkorg(String vkorg) {
+		this.vkorg = vkorg;
+	}
+
+	public String getA32_zcdz() {
+		return a32_zcdz;
+	}
+
+	public void setA32_zcdz(String a32_zcdz) {
+		this.a32_zcdz = a32_zcdz;
 	}
 
 	

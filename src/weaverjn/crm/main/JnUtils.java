@@ -13,6 +13,7 @@ import weaver.general.Util;
  * 2017年4月21日 上午10:12:43
  */
 public class JnUtils {
+	public static String regEx = "^(0+)";
 	
 	/**
 	 * 获得日期或日期时间

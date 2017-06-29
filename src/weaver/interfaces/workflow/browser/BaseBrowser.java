@@ -1,7 +1,7 @@
 package weaver.interfaces.workflow.browser;
 
 import java.io.StringReader;
-import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -599,9 +599,10 @@ public class BaseBrowser extends BaseBean implements Browser {
 	{
 		List dataList = new ArrayList();
 		String newcustomhref = this.replaceDefaultValue(userid, customhref);
-		newcustomhref = newcustomhref.replace("192.168.1.108", "192.168.136.81");
 		String result = BrowserIOServlet.sendGet(newcustomhref, "");
-		result = URLDecoder.decode(result);
+
+		result = java.net.URLDecoder.decode(result);
+
 		writeLog("newcustomhref:" + newcustomhref);
 		dataList = this.parseResultXML(result, fieldMap, tranMap,searchValueMap);
 		return dataList;
@@ -1838,8 +1839,7 @@ public class BaseBrowser extends BaseBean implements Browser {
      * @return
      */
     public BrowserBean searchById(String userid,String id) {
-    	
-    	if(Util.null2String(this.from).equals("1")){//来自模块的自定义浏览按钮
+    	if(Util.null2String(this.from).trim().equals("1")){//来自模块的自定义浏览按钮
     		return searchByIdLocal(userid,id);
     	}
     	if("2".equals(from))
@@ -2579,12 +2579,13 @@ public class BaseBrowser extends BaseBean implements Browser {
 		String vdatasource = "";
 		//如果有外部数据源就用外部数据源没有就用系统数据源
         if(ds!=null){
-        	vdatasource = ds.toString();
-        	int index = vdatasource.indexOf("datasource.");
-        	if(index>-1){
-        		vdatasource = vdatasource.substring(index, vdatasource.indexOf("("));
-        		vdatasource = vdatasource.replace("datasource.", "");
-        	}
+        	vdatasource = ds.getDatasourcename();
+        	//int index = vdatasource.indexOf("datasource.");
+        	//writeLog("index==getPoolname======"+index);
+        	//if(index>-1){
+        		//vdatasource = vdatasource.substring(index, vdatasource.indexOf("("));
+        		//vdatasource = vdatasource.replace("datasource.", "");
+        	//}
         }
         return vdatasource;
 	}

@@ -106,6 +106,53 @@ public class utils extends BaseBean{
         return selectname;
     }
 
+
+    public static String getSelectName(String tablename, String fieldname, String selectvalue) {
+        String sql = "SELECT SELECTNAME FROM WORKFLOW_SELECTITEM WHERE FIELDID=(SELECT ID FROM WORKFLOW_BILLFIELD WHERE BILLID=(SELECT ID FROM WORKFLOW_BILL WHERE TABLENAME='" + tablename + "') AND FIELDNAME='" + fieldname + "') AND SELECTVALUE='" + selectvalue + "'";
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        String selectname = "";
+        if (recordSet.next()) {
+            selectname = recordSet.getString("SELECTNAME");
+        }
+        return selectname;
+    }
+
+    public static String getModTableName(String field, int billid) {
+        String sql = "SELECT TABLENAME FROM WORKFLOW_BILL WHERE ID=(SELECT FORMID FROM MODEINFO WHERE ID=(SELECT MODEID FROM MODE_CUSTOMBROWSER WHERE ID=(SELECT CUSTOMID FROM DATASHOWSET WHERE CONCAT('browser.', NAME)=(SELECT FIELDDBTYPE FROM WORKFLOW_BILLFIELD WHERE FIELDNAME='" + field + "' AND BILLID=" + billid + "))))";
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        String tablename = "";
+        if (recordSet.next()) {
+            tablename = recordSet.getString(1);
+        }
+        return tablename;
+    }
+
+    public static int getBillIdByTableName(String tableName) {
+        String sql = "SELECT ID FROM WORKFLOW_BILL WHERE TABLENAME='" + tableName + "'";
+        RecordSet recordSet = new RecordSet();
+        recordSet.executeSql(sql);
+        int billId = 0;
+        if (recordSet.next()) {
+            billId = recordSet.getInt(1);
+        }
+        return billId;
+    }
+
+    public static String org(String workflowType) {
+        String typename = utils.getFieldValue("workflow_type", "typename", workflowType);//得到流程类型名称
+        String orgStr = "";
+        if (typename.equals("QM万和")) {
+            orgStr = "1610";
+        } else if (typename.equals("QM万润")) {
+            orgStr = "1620";
+        } else if(typename.equals("QM鲁海")){
+            orgStr = "1630";
+        }
+        return orgStr;
+    }
+
     public static void main(String[] args) {
         String s = "123456789qwerasd";
         String[] arr = slice(s, 5, 4);

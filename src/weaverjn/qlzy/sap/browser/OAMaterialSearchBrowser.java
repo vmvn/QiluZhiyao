@@ -122,7 +122,8 @@ public class OAMaterialSearchBrowser extends BaseBean {
         String driver = "oracle.jdbc.driver.OracleDriver";
         String username = "ecology";
         String password = "ecology";
-        String url = "jdbc:oracle:thin:@192.168.1.109:1521:ecology";
+        String url;
+        url = new PropertiesUtil().getPropValue("weaver", "ecology.url");
         Connection conn = null;
         Statement statement = null;
         try {

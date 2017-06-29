@@ -9,6 +9,7 @@ import weaver.general.BaseBean;
 import weaver.general.Util;
 import weaver.interfaces.workflow.action.Action;
 import weaver.soa.workflow.request.RequestInfo;
+import weaver.workflow.request.RequestManager;
 import weaverjn.qlzy.sap.WSClientUtils;
 import weaverjn.utils.PropertiesUtil;
 
@@ -26,6 +27,10 @@ public class MaterialQualification extends BaseBean implements Action  {
 	public String execute(RequestInfo requestInfo) {
 		Map<String, String> mainTableData = utils.getMainTableData(requestInfo.getMainTableInfo());
 		String ypmc = mainTableData.get("ypmc");
+		RequestManager requestManager = requestInfo.getRequestManager();
+//		String workflowType = requestManager.getWorkflowtype();
+		int formid = requestManager.getFormid();
+		setUf(utils.getModTableName("ypmc", formid));
 		String tag = "erp:MT_Material_Qualification_Req";
 		String request = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:erp=\"http://qilu-pharma.com.cn/ERP01/\">" +
 				"   <soapenv:Header/>\n" +
@@ -50,11 +55,11 @@ public class MaterialQualification extends BaseBean implements Action  {
 		writeLog(response);
         RET_MSG ret_msg = getRET_MSG(response);
         if (ret_msg == null) {
-            requestInfo.getRequestManager().setMessageid("Message");
+            requestInfo.getRequestManager().setMessageid("SAP Response Message");
             requestInfo.getRequestManager().setMessagecontent(response);
         } else {
             if (ret_msg.getMSG_TYPE().equals("E")) {
-                requestInfo.getRequestManager().setMessageid("sap 返回信息");
+                requestInfo.getRequestManager().setMessageid("SAP Response Message");
                 requestInfo.getRequestManager().setMessagecontent(ret_msg.getMESSAGE());
             }
         }

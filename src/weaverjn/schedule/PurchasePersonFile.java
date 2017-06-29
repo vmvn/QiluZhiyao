@@ -8,9 +8,9 @@ import com.weaver.TestInit;
 import weaver.conn.RecordSet;
 import weaver.general.Util;
 import weaver.system.SysRemindWorkflow;
-import weaverjn.action.integration.utils;
+import weaverjn.action.integration.util;
 import weaverjn.qlzy.sap.WSClientUtils;
-import weaverjn.utils.PropertiesUtil;
+import weaverjn.util.PropertiesUtil;
 
 /**
  * 购货单位收货人资料定时任务，到期提醒指定人，不传sap
@@ -87,8 +87,8 @@ public class PurchasePersonFile extends BaseCronJob{
                 "      </"+tag+">\n" +
                 "   </soapenv:Body>\n" +
                 "</soapenv:Envelope>";
-		String username = utils.getUsername();
-		String password = utils.getPassword();
+		String username = util.getUsername();
+		String password = util.getPassword();
 		String endpoint = new PropertiesUtil().getPropValue("qiluEndpoint", this.getClass().getSimpleName());
 		WSClientUtils.callWebService(request, endpoint, username, password);
 	}

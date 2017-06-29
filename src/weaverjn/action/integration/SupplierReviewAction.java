@@ -43,7 +43,7 @@ public class SupplierReviewAction extends BaseBean implements Action {
                     "            <Send_Time></Send_Time>\n" +
                     "         </ControlInfo>\n" +
                     "         <lifnr>" + Util.null2String(recordSet.getString("gysbh")) + "</lifnr>\n" +
-//                    "         <ekorg>" + utils.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
+//                    "         <ekorg>" + util.slice(Util.null2String(recordSet.getString("cgzz")), 1) + "</ekorg>\n" +
                     "         <ekorg>" + this.ekorg + "</ekorg>\n" +
                     "         <status>Y</status>\n" +
                     "      </erp:MT_SupplierReview>\n" +
